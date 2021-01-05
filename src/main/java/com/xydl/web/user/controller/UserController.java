@@ -8,7 +8,6 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @CheckToken
-    @Encrypt
+//    @Encrypt
     @RequestMapping(value = "/getUserList",method = RequestMethod.POST)
     public CommonResult getUserList(HttpServletRequest request){
         String requestJson = (String) request.getAttribute("requestJson");

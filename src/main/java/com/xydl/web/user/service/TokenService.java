@@ -54,7 +54,7 @@ public class TokenService {
         JSONObject userObj = null;
         // 获取请求携带的令牌
         String token = getToken(request);
-        if (StringUtils.isNotEmpty(token))
+        if (StringUtils.isNotEmpty(token) && !"null".equals(token))
         {
             Claims claims = parseToken(token);
             // 解析对应的权限以及用户信息
@@ -180,7 +180,8 @@ public class TokenService {
      * @return token
      */
     private String getToken(HttpServletRequest request) {
-        String token = request.getHeader(header);
+//        String token = request.getHeader(header);
+        String token = JSONObject.fromObject(request.getAttribute("requestHeader")).getString("token");
         if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
             token = token.replace(Constants.TOKEN_PREFIX, "");
         }
