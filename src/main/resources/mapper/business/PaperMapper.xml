@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xydl.web.business.dao.PaperMapper">
+    <!--    根据机构id查询机构图片id-->
+    <select id="selectPaperByOrganizationId" parameterType="java.util.Map" resultType="java.util.Map">
+    select paper_id,
+    paper_name,
+    paper_desc,
+    paper_status,
+    paper_sort,
+    expected_complete_time
+    from t_paper
+    where organization_id = #{organizationId};
+    </select>
+    <!--    根据问卷id查询题目-->
+    <select id="selectQuestionByPaperId" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+        question_id as questionId,
+        paper_id as paperId,
+        question_type as questionType,
+        question_name as questionName,
+        question_desc as questonDesc,
+        question_sort as questionSort,
+        required_flag as requiredFlag
+        from t_question
+        where paper_id = #{paperId}
+    </select>
+    <!--  根据问卷id查询选项  -->
+    <select id="selectOptionByPaperId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        option_id as optionId,
+        paper_id as paperId,
+        question_id as questionId,
+        option_content as optionContent,
+        option_score as optionScore,
+        option_sort as optionSort
+        from t_option
+        WHERE paper_id = #{paperId}
+    </select>
+    <!--   根据optionId查询选项 -->
+    <select id="selectOptionByOptionId" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+        option_id as optionId,
+        paper_id as paperId,
+        question_id as questionId,
+        option_content as optionContent,
+        option_score as optionScore,
+        option_sort as optionSort
+        from t_option where option_id = #{optionId}
+    </select>
+    <!--  保存回答结果answer  -->
+    <insert id="batchSaveAnswerList" parameterType="java.util.Map">
+        INSERT into t_answer(
+        answer_id,
+        survey_user_id,
+        paper_id,
+        question_id,
+        option_id,
+        option_content,
+        answer_score,
+        create_time
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.answerId},
+            #{item.surveyUserId},
+            #{item.paperId},
+            #{item.questionId},
+            #{item.optionId},
+            #{item.optionContent},
+            #{item.answerScore},
+            now()
+            )
+        </foreach>
+    </insert>
+    <!-- 查询指定问卷的题目数量-->
+    <select id="questionNumByPaperId" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) AS questionNum from t_question where paper_id = #{paperId}
+    </select>
+    <!--  查询指定paper_id和survey_user_id并根据question分组，返回组数  -->
+    <select id="answerNumByQuestion" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) AS answerNum from (SELECT count(*) from t_answer WHERE paper_id = #{paperId} and survey_user_id = #{surveyUserId} GROUP BY question_id)answer
+    </select>
+    <!--  根据appUserId查询问卷结果  -->
+    <select id="selectResultByAppUserId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        paper_result_id as paperResultId,
+        app_user_id as appUserId,
+        survey_user_id as surveyUserId,
+        paper_id as paperId,
+        paper_name as paperName,
+        paper_score as paperScore,
+        result_status as resultStatus,
+        create_time as createTime
+        from t_paper_result where app_user_id = #{appUserId}
+    </select>
+    <!--添加paperResult-->
+    <insert id="insertPaperResult" parameterType="java.util.Map">
+    INSERT INTO t_paper_result(
+    paper_result_id,
+    app_user_id,
+    survey_user_id,
+    paper_id,
+    paper_name,
+    paper_score,
+    result_status,
+    create_time
+    )
+    VALUES
+    (
+    #{paperResultId},
+    #{appUserId},
+    #{surveyUserId},
+    #{paperId},
+    #{paperName},
+    #{paperScore},
+    #{resultStatus},
+    now()
+    )
+    </insert>
+<!--    根据问卷回答结果id删除问卷-->
+    <delete id="deleteResultByResultId" parameterType="java.util.Map">
+        delete from t_paper_result where paper_result_id = #{paperResultId}
+    </delete>
+</mapper>

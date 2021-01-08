@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xydl.web.business.dao.OrganizationMapper">
+<!--    添加老人信息-->
+    <insert id="insertSurveyUser" parameterType="java.util.Map">
+        INSERT INTO t_survey_user(
+        survey_user_id,
+        survey_user_name,
+        survey_user_sex,
+        survey_user_age,
+        phone_number,
+        second_user_name,
+        survey_user_address,
+        create_time
+        )VALUES (
+        #{surveyUserId},
+        #{surveyUserName},
+        #{surveyUserSex},
+        #{surveyUserAge},
+        #{phoneNumber},
+        #{secondUserName},
+        #{surveyUserAddress},
+        NOW()
+        )
+    </insert>
+    <!--根据id查询机构信息-->
+    <select id="selectOrganizationById" parameterType="java.lang.String" resultType="java.util.Map" >
+        select
+            organization_id,
+            organization_name,
+            organization_desc,
+            organization_phone,
+            organization_address,
+            create_time
+        from t_organization
+        where
+        organization_id = #{organizationId}
+
+    </select>
+
+<!--    根据机构id查询机构图片id-->
+    <select id="selectOrganizationImageById" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+        image_id,
+        organization_id,
+        image_url,
+        sort
+        from t_organization_image
+        where
+        organization_id = #{organizationId};
+    </select>
+    <select id="selectAppUserByOrganizationId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        user_name as userName,
+        sex,
+        age,
+        phone_number as phoneNumber,
+        password,
+        parent_id as parentId,
+        organization_name as organizationName,
+        user_type as userType,
+        user_source as userSource,
+        user_status as userStatus
+        from t_app_user
+        where organization_id = #{organizationId}
+
+    </select>
+
+</mapper>

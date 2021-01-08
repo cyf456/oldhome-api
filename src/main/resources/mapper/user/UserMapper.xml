@@ -6,7 +6,7 @@
     </select>
 
     <select id="getUserInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        select user_id,user_name as userName,phone_number as phoneNumber,password from t_app_user where phone_number = #{phoneNumber} and password = #{password}
+        select user_id,user_name as userName,phone_number as phoneNumber,password from t_app_user where phone_number = #{phoneNumber} and user_name = #{userName}
     </select>
 
     <!-- 新增用户 -->
