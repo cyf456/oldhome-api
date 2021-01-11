@@ -37,46 +37,63 @@ public class PaperServiceImpl implements PaperService {
     private PaperMapper paperMapper;
 
 
-    @Override
+    /**
+     * 根据机构id查询问卷
+     * @return 机构图片集合
+     */
     public List<Map<String, Object>> selectPaperByOrganizationId(JSONObject jsonObj) {
         //将json类型转换成Map集合
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObj.toString());
         return paperMapper.selectPaperByOrganizationId(paramsMap);
     }
 
-    @Override
+    /**
+     * 根据问卷Id查询题目和选项
+     * @param jsonObj
+     * @return
+     */
     public List<Map<String, Object>> selectQuestionByPaperId(JSONObject jsonObj) {
         //将json类型转换成Map集合
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObj.toString());
-        //查询题目
-        List<Map<String, Object>> questionList = paperMapper.selectQuestionByPaperId(paramsMap);
-        //查询选项
-        List<Map<String, Object>> optionList = paperMapper.selectOptionByPaperId(paramsMap);
-        //表示题目
+
+        //题目map
         Map<String,Object> questionMap;
-        //每个题目的答案集合
-        List<Map<String,Object>> questionOptionList;
-        //最终题目集合
+
+        //题目list(有选项)
         List<Map<String,Object>> paperList = new ArrayList<>();
-        for (int i = 0; i < questionList.size(); i++) {
-            questionOptionList = new ArrayList<>();
-            for (int j = 0; j < optionList.size(); j++) {
-                if (questionList.get(i).get(PaperConstants.QUESTION_ID).equals(optionList.get(j).get(PaperConstants.QUESTION_ID))) {
-                    //将与题目id相同的选项添加到题目选项集合中
-                    questionOptionList.add(optionList.get(j));
+        //题目list(无选项)
+        List<Map<String, Object>> questionList = paperMapper.selectQuestionByPaperId(paramsMap);
+        //选项list
+        List<Map<String, Object>> optionList = paperMapper.selectOptionByPaperId(paramsMap);
+        //每个题目的选项list
+        List<Map<String,Object>> questionOptionList;
+
+        if(questionList != null && questionList.size()>0) {
+            for (int i = 0; i < questionList.size(); i++) {
+                questionOptionList = new ArrayList<>();
+                questionMap = questionList.get(i);
+                for (int j = 0; j < optionList.size(); j++) {
+                    if (questionList.get(i).get("questionId").equals(optionList.get(j).get("questionId"))) {
+                        //将与题目id相同的选项添加到题目的选项list中
+                        questionOptionList.add(optionList.get(j));
+                    }
                 }
+                //将题目选项list添加到
+                questionMap.put("optionList", questionOptionList);
+                //将题目添加到题目集合中
+                paperList.add(questionMap);
             }
-            //选项集合添加到题目中
-            questionList.get(i).put("optionList",questionOptionList);
-            //将题目添加到题目集合中
-            paperList.add(questionList.get(i));
         }
         return paperList;
     }
 
-    @Override
+    /**
+     * 添加问卷回答选项和分数表
+     * @param jsonObject
+     * @return
+     */
     public Map<String, Object> answerPaper(JSONObject jsonObject) {
-        //        {
+//                {
 //            "appUserId":"晨晨",
 //            "surveyUserId":"陈一帆",
 //            "paperId":"1",
@@ -100,23 +117,32 @@ public class PaperServiceImpl implements PaperService {
 //            ]
 //        }
 
-        //返回结果，成功添加answer数量和成功添加result数量
-        Map<String, Object> map = new HashedMap();
-        //保存的answer对象
-        Map<String, Object> answerMap;
-        //保存的分数表对象
-        Map<String, Object> resultMap = new HashMap<>();
-        //保存的answer对象集合
-        ArrayList<Map<String, Object>> answerList = new ArrayList<>();
-        //分数
-        int paperScore = 0;
         //1、获取前端传过来的问卷调查结果
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObject.toString());
         //1.1获取answer集合
-        List<Map<String, Object>> answerArr = JSONArray.fromObject(paramsMap.get("answerArr"));
+        JSONArray answerArr = JSONArray.fromObject(paramsMap.get("answerArr"));
+
+        //返回结果，成功添加answer数量和成功添加result数量
+        Map<String, Object> map = new HashMap<>();
+        //保存的分数表对象
+        Map<String, Object> resultMap = new HashMap<>();
+        //保存的answer对象
+        Map<String, Object> answerMap;
+
+        //保存的answer对象集合
+        List<Map<String, Object>> answerList = new ArrayList<>();
+
+        //分数
+        int paperScore = 0;
+        //成功保存的答案数量
+        int answerNum = 0;
+        //成功保存问卷结果数量
+        int resultNum = 0;
+
         //便利answer集合，拼装answerMap对象
         for (int i = 0; i < answerArr.size(); i++) {
-            answerMap = answerArr.get(i);
+            JSONObject jsonObject1 = answerArr.getJSONObject(i);
+            answerMap = JsonUtils.jsonStrToMap(jsonObject1.toString());
             //根据optionId查询选项
             Map<String, Object> optionMap = paperMapper.selectOptionByOptionId(answerMap);
             answerMap.put("answerId", IdUtils.fastSimpleUUID());
@@ -127,13 +153,15 @@ public class PaperServiceImpl implements PaperService {
             paperScore += (int) optionMap.get("optionScore");
         }
         //2、保存答案选项
-        int answerNum = paperMapper.batchSaveAnswerList(answerList);
+        if(answerList != null && answerList.size() > 0) {
+            answerNum = paperMapper.batchSaveAnswerList(answerList);
+        }
         //3、计算完成度
         //3.1、根据paperId查询试卷题目数
         int paperQuestionNum = paperMapper.questionNumByPaperId(paramsMap);
         //3.2、查询指定paper_id和survey_user_id并根据question分组，返回组数
         int answerQuestionNum = paperMapper.answerNumByQuestion(paramsMap);
-        System.out.println("paperQuestionNum==================================" + paperQuestionNum);
+        System.out.println("paperQuestionNum===================================" + paperQuestionNum);
         System.out.println("answerQuestionNum==================================" + answerQuestionNum);
         //问卷结果状态
         int resultStatus = 1;//待完成
@@ -149,19 +177,27 @@ public class PaperServiceImpl implements PaperService {
         resultMap.put("paperScore", paperScore);
         resultMap.put("resultStatus", resultStatus);
         //4、保存问卷结果
-        int resultNum = paperMapper.insertPaperResult(resultMap);
+        if(resultMap != null) {
+            resultNum = paperMapper.insertPaperResult(resultMap);
+        }
         //添加返回数据
         map.put("answerNum", answerNum);
         map.put("resultNum", resultNum);
         return map;
     }
 
-    @Override
+    /**
+     * 根据用户id查询分数
+     * @return
+     */
     public Map<String, Object> selectResultByAppUserId(JSONObject jsonObject) {
-        //完成的结果
+        //完成的结果map
         Map<String, Object> finishMap;
-        //未完成的结果
+        //未完成的结果map
         Map<String, Object> unfinishMap;
+        //最终返回结果map
+        Map<String,Object> objectMap = new HashMap<>();
+
         // 完成的结果集合
         List<Map<String, Object>> finishList = new ArrayList<>();
         //未完成的结果集合
@@ -170,6 +206,7 @@ public class PaperServiceImpl implements PaperService {
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObject.toString());
         //根据appUserId查询result
         List<Map<String, Object>> resultList = paperMapper.selectResultByAppUserId(paramsMap);
+
         //便利数据集合，判断受否完成
         for (Map<String, Object> r : resultList
         ) {
@@ -206,17 +243,19 @@ public class PaperServiceImpl implements PaperService {
                 finishList.add(finishMap);
             }
         }
-        //返回结果map
-        Map<String,Object> objectMap  = new HashMap<>();
+
         objectMap.put("finishList",finishList);
         objectMap.put("unfinishList",unfinishList);
         return objectMap;
     }
 
-    @Override
+    /**
+     * 根据分数Id删除结果
+     */
     public int deleteResultByResultId(JSONObject jsonObject) {
         //获取前端穿过来的数据
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObject.toString());
         return paperMapper.deleteResultByResultId(paramsMap);
     }
+
 }

@@ -34,20 +34,20 @@ public interface PaperService {
     public List<Map<String, Object>>  selectQuestionByPaperId(JSONObject jsonObj);
 
     /**
-     * 添加问卷回答选项和成绩表
+     * 添加问卷回答选项和分数表
      * @param jsonObject
      * @return
      */
     public Map<String,Object> answerPaper(JSONObject jsonObject);
 
     /**
-     * 根据用户返回评估信息
+     * 根据用户id查询分数
      * @return
      */
     public Map<String,Object> selectResultByAppUserId(JSONObject jsonObject);
 
     /**
-     * 根据结果Id删除结果
+     * 根据分数Id删除结果
      */
     public int deleteResultByResultId(JSONObject jsonObject);
 }

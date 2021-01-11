@@ -48,7 +48,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         //将json类型转换成Map集合
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObject.toString());
         //添加id
-        paramsMap.put("survey_user_id", IdUtils.fastSimpleUUID());
+        paramsMap.put("surveyUserId", IdUtils.fastSimpleUUID());
         //添加机构信息
         return organizationMapper.insertSurveyUser(paramsMap);
     }

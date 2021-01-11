@@ -5,6 +5,7 @@ import com.xydl.common.annotation.Encrypt;
 import com.xydl.common.utils.CommonResult;
 import com.xydl.common.utils.JsonUtils;
 import com.xydl.web.business.service.CaseDeclarerService;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class CaseDeclarerController {
     @RequestMapping(value = "/saveCaseDeclarerData",method = RequestMethod.POST)
     public CommonResult saveCaseDeclarerData(HttpServletRequest request){
         String requestJson = (String) request.getAttribute("requestJson");
+        JSONObject jsonObj = JSONObject.fromObject(requestJson);
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(requestJson);
         int result = caseDeclarerService.saveCaseDeclarerData(paramsMap);
         log.info("主键：" + paramsMap.get("id"));

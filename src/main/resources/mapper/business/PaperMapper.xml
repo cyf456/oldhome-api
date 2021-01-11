@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xydl.web.business.dao.PaperMapper">
-    <!--    根据机构id查询机构图片id-->
+    <!--    根据机构id查询问卷-->
     <select id="selectPaperByOrganizationId" parameterType="java.util.Map" resultType="java.util.Map">
-    select paper_id,
-    paper_name,
-    paper_desc,
-    paper_status,
-    paper_sort,
-    expected_complete_time
+    select
+    paper_id as paperId,
+    paper_name as paperName,
+    paper_desc as paperDesc,
+    paper_status as paperStatus,
+    paper_sort paperSort,
+    expected_complete_time as expectedCompleteTime
     from t_paper
     where organization_id = #{organizationId};
     </select>

@@ -4,63 +4,65 @@
 <!--    添加老人信息-->
     <insert id="insertSurveyUser" parameterType="java.util.Map">
         INSERT INTO t_survey_user(
-        survey_user_id,
-        survey_user_name,
-        survey_user_sex,
-        survey_user_age,
-        phone_number,
-        second_user_name,
-        survey_user_address,
-        create_time
+            survey_user_id,
+            survey_user_name,
+            survey_user_sex,
+            survey_user_age,
+            phone_number,
+            second_user_name,
+            survey_user_address,
+            create_time
         )VALUES (
-        #{surveyUserId},
-        #{surveyUserName},
-        #{surveyUserSex},
-        #{surveyUserAge},
-        #{phoneNumber},
-        #{secondUserName},
-        #{surveyUserAddress},
+            #{surveyUserId},
+            #{surveyUserName},
+            #{surveyUserSex},
+            #{surveyUserAge},
+            #{phoneNumber},
+            #{secondUserName},
+            #{surveyUserAddress},
         NOW()
         )
     </insert>
+
     <!--根据id查询机构信息-->
     <select id="selectOrganizationById" parameterType="java.lang.String" resultType="java.util.Map" >
         select
-            organization_id,
-            organization_name,
-            organization_desc,
-            organization_phone,
-            organization_address,
-            create_time
+            organization_id as organizationId,
+            organization_name as organizationName,
+            organization_desc as organizationDesc,
+            organization_phone as organizationPhone,
+            organization_address as organizationAddress,
+            create_time as createTime
         from t_organization
         where
         organization_id = #{organizationId}
 
     </select>
 
-<!--    根据机构id查询机构图片id-->
+    <!-- 根据机构id查询机构图片id -->
     <select id="selectOrganizationImageById" parameterType="java.util.Map" resultType="java.util.Map">
         select
-        image_id,
-        organization_id,
-        image_url,
-        sort
+            image_id as imageId,
+            image_url as imageUrl,
+            sort
         from t_organization_image
         where
         organization_id = #{organizationId};
     </select>
+
+
     <select id="selectAppUserByOrganizationId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
-        user_name as userName,
-        sex,
-        age,
-        phone_number as phoneNumber,
-        password,
-        parent_id as parentId,
-        organization_name as organizationName,
-        user_type as userType,
-        user_source as userSource,
-        user_status as userStatus
+            user_name as userName,
+            sex,
+            age,
+            phone_number as phoneNumber,
+            password,
+            parent_id as parentId,
+            organization_name as organizationName,
+            user_type as userType,
+            user_source as userSource,
+            user_status as userStatus
         from t_app_user
         where organization_id = #{organizationId}
 
