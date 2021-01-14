@@ -1,6 +1,7 @@
 package com.xydl.web.business.dao;
 
 import net.sf.json.JSONObject;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
  * @copyright 2021 www.XXXXX.com
  * 注意 本内容仅限于 南京星源动力信息技术有限公司，禁止外泄以及用于其他的商业
  */
+@Mapper
 public interface OrganizationMapper {
     /**
      * 根据id查询机构
@@ -40,9 +42,24 @@ public interface OrganizationMapper {
     public int insertSurveyUser(Map<String, Object> paramsMap);
 
     /**
+     * 根据id查询老人
+     *
+     * @return 机构
+     */
+    public Map<String,Object> selectSurveyUserBySurveyUserId(Map<String, Object> paramsMap);
+
+    /**
+     * 根据评论员id查询老人
+     * @param paramsMap
+     * @return
+     */
+    public List<Map<String,Object>> selectSurveyUserByAppUserId(Map<String, Object> paramsMap);
+
+    /**
      * 根据机构id查询用户
      *
      * @return 机构
      */
     public List<Map<String,Object>> selectAppUserByOrganizationId(Map<String, Object> paramsMap);
+
 }

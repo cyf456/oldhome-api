@@ -50,4 +50,22 @@ public interface PaperService {
      * 根据分数Id删除结果
      */
     public int deleteResultByResultId(JSONObject jsonObject);
-}
+
+    /**
+     * 根据ResultId查询answer,question,option
+     * @param jsonObj
+     * @return
+     */
+    public List<Map<String, Object>>  selectResultQuestionByResultId(JSONObject jsonObj);
+
+    /**
+     *到出result
+     */
+    public String expotResultByResultId(JSONObject jsonObj) throws Exception;
+
+    /**
+     * 根据机构id查询评论员及result
+     * @return
+     */
+    public List<Map<String,Object>> selectAppuserResultByOrganizationId(JSONObject jsonObj);
+ }

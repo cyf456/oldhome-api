@@ -7,19 +7,27 @@
             survey_user_id,
             survey_user_name,
             survey_user_sex,
-            survey_user_age,
+            survey_user_birthdate,
             phone_number,
             second_user_name,
             survey_user_address,
+            detail_address,
+            organization_id,
+            remarks,
+            user_id,
             create_time
         )VALUES (
             #{surveyUserId},
             #{surveyUserName},
             #{surveyUserSex},
-            #{surveyUserAge},
+            #{surveyUserBirthdate},
             #{phoneNumber},
             #{secondUserName},
             #{surveyUserAddress},
+            #{detailAddress},
+            #{organizationId},
+            #{remarks},
+            #{userId},
         NOW()
         )
     </insert>
@@ -67,5 +75,28 @@
         where organization_id = #{organizationId}
 
     </select>
+    <select id="selectSurveyUserBySurveyUserId" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+        survey_user_name as surveyUserName,
+        second_user_name as secondUserName,
+        survey_user_address as surveyUserAddress,
+        survey_user_sex as surveyUserSex,
+        create_time as createTime,
+        survey_user_birthdate as surveyUserBirthdate,
+        detail_address as detailAddress
+        from t_survey_user
+        where survey_user_id = #{surveyUserId}
+    </select>
+    <select id="selectSurveyUserByAppUserId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        survey_user_id as surveyUserId,
+        survey_user_name as surveyUserName,
+        survey_user_sex as surveyUserSex,
+        survey_user_birthdate as age,
+        survey_user_address as surveyUserAddress,
+        detail_address as detailAddress
+        FROM `t_survey_user` WHERE user_id = #{appUserId}
+
+   </select>
 
 </mapper>

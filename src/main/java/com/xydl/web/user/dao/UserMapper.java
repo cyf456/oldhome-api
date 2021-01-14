@@ -12,4 +12,11 @@ public interface UserMapper {
     public Map<String, Object> getUserInfo(Map<String, Object> paramsMap);
 
     public int saveAppUser(Map<String, Object> paramsMap);
+
+    /**
+     * 根据机构id查询评论员
+     * @param paramsMap
+     * @return
+     */
+    public List<Map<String,Object>> selectAppUserByOrganization(Map<String, Object> paramsMap);
 } 

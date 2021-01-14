@@ -1,5 +1,8 @@
 package com.xydl.web.business.dao;
 
+import net.sf.json.JSONObject;
+import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +19,7 @@ import java.util.Map;
  * @copyright 2021 www.XXXXX.com
  * 注意 本内容仅限于 南京星源动力信息技术有限公司，禁止外泄以及用于其他的商业
  */
-
+@Mapper
 public interface PaperMapper {
     /**
      * 根据机构id查询问卷
@@ -47,11 +50,13 @@ public interface PaperMapper {
     public Map<String,Object> selectOptionByOptionId(Map<String, Object> paramsMap);
 
     /**
-     * 保存回答结果answer
+     * 根据optionId查询选项
+     *
+     * @return 选项集合
      */
-    public int batchSaveAnswerList(List<Map<String,Object>> list);
+    public List<Map<String, Object>> selectOptionByOptionListId(List<Map<String,Object>> list);
 
-    /**
+        /**
      * 查询指定问卷的题目数量
      * @param paramsMap
      * @return
@@ -65,10 +70,39 @@ public interface PaperMapper {
      */
     public int answerNumByQuestion(Map<String, Object> paramsMap);
 
+
+
+
     /**
-     * 添加问卷结果表
+     * 根据resultId查询回答结果
      */
-    public int insertPaperResult(Map<String, Object> paramsMap);
+    public List<Map<String,Object>> selectAnswerByResultId(Map<String,Object> paramsMap);
+
+    /**
+     * 根据问卷被调查老人id和问卷id删除回答结果
+     */
+    public int deleteAnswerByPaperId(Map<String,Object> paramsMap);
+
+    /**
+     * 保存回答结果answer
+     */
+    public int batchSaveAnswerList(List<Map<String,Object>> list);
+
+    /**
+     * 根据问卷被result删除回答结果
+     */
+    public int deleteAnswerByResultId(Map<String,Object> paramsMap);
+
+
+    /**
+     * 根据问卷回答结果id删除问卷
+     */
+    public int deleteResultByResultId(Map<String, Object> paramsMap);
+
+    /**
+     * 根据问卷被调查老人id和问卷id查询result
+     */
+    public Map<String,Object> selectResultByResultId(Map<String, Object> paramsMap);
 
     /**
      * 根据appUserId查询问卷结果
@@ -76,7 +110,12 @@ public interface PaperMapper {
     public List<Map<String,Object>> selectResultByAppUserId(Map<String, Object> paramsMap);
 
     /**
-     * 根据问卷回答结果id删除问卷
+     * 修改PaperResult
      */
-    public int deleteResultByResultId(Map<String, Object> paramsMap);
+    public int updatePaperResult(Map<String, Object> paramsMap);
+
+    /**
+     * 添加问卷结果表
+     */
+    public int insertPaperResult(Map<String, Object> paramsMap);
 }

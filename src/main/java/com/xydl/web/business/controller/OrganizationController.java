@@ -34,6 +34,11 @@ public class OrganizationController {
     @Autowired
     private OrganizationService organizationService;
 
+    /**
+     * 根据id查询机构
+     *
+     * @return 机构
+     */
     @CheckToken
     @RequestMapping(value = "/getOrganizationById",method = RequestMethod.POST)
     public CommonResult getOrganizationById(HttpServletRequest request){
@@ -48,6 +53,11 @@ public class OrganizationController {
         return CommonResult.success(organizationMap);
     }
 
+    /**
+     * 添加老人信息
+     * @param
+     * @return
+     */
     @CheckToken
     @RequestMapping(value = "/addSurveyUser",method = RequestMethod.POST)
     public CommonResult addSurveyUser(HttpServletRequest request){
@@ -62,6 +72,11 @@ public class OrganizationController {
         return CommonResult.success(num);
     }
 
+    /**
+     * 根据机构id查询用户
+     *
+     * @return 机构
+     */
     @CheckToken
     @RequestMapping(value = "/getAppUserByOrganizationId",method = RequestMethod.POST)
     public CommonResult getAppUserByOrganizationId(HttpServletRequest request){
@@ -70,6 +85,25 @@ public class OrganizationController {
         try {
             JSONObject jsonObject = JSONObject.fromObject(requestJson);
             mapList = organizationService.selectAppUserByOrganizationId(jsonObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CommonResult.success(mapList);
+    }
+
+    /**
+     * 根据评论员id查询老人
+     * @param
+     * @return
+     */
+    @CheckToken
+    @RequestMapping(value = "/getSurveyUserByAppUserId",method = RequestMethod.POST)
+    public CommonResult getSurveyUserByAppUserId(HttpServletRequest request){
+        String requestJson = (String)request.getAttribute("requestJson");
+        List<Map<String,Object>> mapList = new ArrayList<>();
+        try {
+            JSONObject jsonObject = JSONObject.fromObject(requestJson);
+            mapList = organizationService.selectSurveyUserByAppUserId(jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
         }

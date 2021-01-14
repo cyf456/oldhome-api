@@ -8,6 +8,13 @@
     <select id="getUserInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
         select user_id,user_name as userName,phone_number as phoneNumber,password from t_app_user where phone_number = #{phoneNumber} and user_name = #{userName}
     </select>
+    <select id="selectAppUserByOrganization" parameterType="java.util.HashMap" resultType="java.util.Map">
+        SELECT
+        user_id as appUserId,
+        user_name as appUserName,
+        phone_number as phoneNumber
+        from t_app_user where organization_id =#{organizationId}
+    </select>
 
     <!-- 新增用户 -->
     <insert id="saveAppUser" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="id">

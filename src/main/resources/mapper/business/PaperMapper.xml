@@ -54,6 +54,7 @@
         INSERT into t_answer(
         answer_id,
         survey_user_id,
+        paper_result_id,
         paper_id,
         question_id,
         option_id,
@@ -66,6 +67,7 @@
             (
             #{item.answerId},
             #{item.surveyUserId},
+            #{item.paperResultId},
             #{item.paperId},
             #{item.questionId},
             #{item.optionId},
@@ -96,6 +98,37 @@
         create_time as createTime
         from t_paper_result where app_user_id = #{appUserId}
     </select>
+    <select id="selectResultByResultId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        survey_user_id AS surveyUserId,
+        paper_id AS paperId,
+        paper_name AS paperName,
+        paper_score AS paperScore,
+        result_status as resultStatus,
+        create_time as createTime
+        from t_paper_result where paper_result_id = #{paperResultId}
+    </select>
+    <select id="selectAnswerByResultId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT answer_id as answerId,
+        option_id as optionId
+        FROM t_answer
+        where paper_result_id = #{paperResultId}
+    </select>
+
+    <select id="selectOptionByOptionListId" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+        option_id as optionId,
+        option_content as optionContent,
+        question_id as questionId,
+        paper_id as paperId,
+        option_score as answerScore
+        from t_option
+        where option_id in (
+        <foreach collection="list" item="item" index="index" separator=",">
+        #{item.optionId}
+        </foreach>
+        )
+    </select>
     <!--添加paperResult-->
     <insert id="insertPaperResult" parameterType="java.util.Map">
     INSERT INTO t_paper_result(
@@ -124,4 +157,19 @@
     <delete id="deleteResultByResultId" parameterType="java.util.Map">
         delete from t_paper_result where paper_result_id = #{paperResultId}
     </delete>
+<!-- 根据问卷被调查老人id和问卷id删除回答结果-->
+    <delete id="deleteAnswerByPaperId" parameterType="java.util.Map">
+        delete from t_answer where survey_user_id = #{surveyUserId} and paper_id = #{paperId}
+    </delete>
+    <delete id="deleteAnswerByResultId" parameterType="java.util.Map">
+        delete from t_answer where paper_result_id = #{paperResultId}
+    </delete>
+    <!--  修改SurveyUser  -->
+    <update id="updatePaperResult" parameterType="java.util.Map">
+        UPDATE t_paper_result
+        set paper_score = #{paperScore},
+            result_status = #{resultStatus},
+            create_time = now()
+        where paper_result_id = #{paperResultId}
+    </update>
 </mapper>

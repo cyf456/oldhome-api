@@ -2,6 +2,7 @@ package com.xydl.web.business.service;
 
 import net.sf.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public interface OrganizationService {
      * @param jsonObject
      * @return
      */
-    public int insertSurveyUser(JSONObject jsonObject);
+    public int insertSurveyUser(JSONObject jsonObject) throws ParseException;
 
     /**
      * 根据机构id查询用户
@@ -39,5 +40,12 @@ public interface OrganizationService {
      * @return 机构
      */
     public List<Map<String,Object>> selectAppUserByOrganizationId(JSONObject jsonObj);
+
+    /**
+     * 根据评论员id查询老人
+     * @param
+     * @return
+     */
+    public List<Map<String,Object>> selectSurveyUserByAppUserId(JSONObject jsonObj) throws Exception;
 
 }
