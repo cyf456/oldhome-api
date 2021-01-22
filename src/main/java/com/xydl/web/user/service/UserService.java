@@ -13,4 +13,11 @@ public interface UserService {
 
     public int insertAppUser(JSONObject jsonObj);
 
+    /**
+     * 查询手机号码
+     * @param
+     * @return
+     */
+    public List<Map<String,Object>> selectAppUser();
+
 }

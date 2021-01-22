@@ -56,7 +56,8 @@
             organization_desc as organizationDesc,
             organization_phone as organizationPhone,
             organization_address as organizationAddress,
-            DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
+            DATE_FORMAT(create_time, '%Y-%m-%d') as createTime,
+            DATE_FORMAT(deadline_time, '%Y-%m-%d') as deadlineTime
         from t_organization
         where
         organization_id = #{organizationId}

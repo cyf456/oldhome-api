@@ -39,6 +39,12 @@ public class AppInterceptor implements HandlerInterceptor{
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        //request.getRequestURI()
+        if(request.getMethod().equals("GET")){
+            return true;
+        }
+
         /*if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             //支持跨域
             response.setHeader("Access-Control-Allow-Origin", "*");

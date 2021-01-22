@@ -20,6 +20,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
@@ -160,8 +161,8 @@ public class PaperServiceImpl implements PaperService {
 //             ) {
 //            System.out.println("optionId============================="+a.get("optionId").toString());
 //        }
-        if(answerArr == null || answerArr.size()==0) {
-            map.put("answer","没有一个选项。");
+        if (answerArr == null || answerArr.size() == 0) {
+            map.put("answer", "没有一个选项。");
             return map;
         }
         List<Map<String, Object>> optionList = paperMapper.selectOptionByOptionListId(answerArr);
@@ -188,7 +189,7 @@ public class PaperServiceImpl implements PaperService {
         resultMap.put("resultStatus", resultStatus);
 
         //System.out.println("======================================"+paramsMap.get("paperResultId"));
-        System.out.println("问卷结果id###################################################"+paramsMap.get("paperResultId"));
+        System.out.println("问卷结果id###################################################" + paramsMap.get("paperResultId"));
         if (paramsMap.get("paperResultId").equals("0")) {
             //生成resultId
             String paperResultId = IdUtils.fastSimpleUUID();
@@ -279,7 +280,7 @@ public class PaperServiceImpl implements PaperService {
         //便利数据集合，判断受否完成
         int finishj = 0;
         int unfinishj = 0;
-        for (int i = 0; i < surveyUserList.size() ; i++) {
+        for (int i = 0; i < surveyUserList.size(); i++) {
             finishSurveyList = new ArrayList<>();
             //unfinishSurveyList = new ArrayList<>();
             for (Map<String, Object> r : resultList
@@ -299,7 +300,7 @@ public class PaperServiceImpl implements PaperService {
                     finishMap.put("resultStatus", r.get("resultStatus"));
                     finishMap.put("createTime", r.get("createTime"));
                     finishSurveyList.add(finishMap);
-                } else if(r.get("surveyUserId").equals(surveyUserList.get(i).get("surveyUserId"))){
+                } else if (r.get("surveyUserId").equals(surveyUserList.get(i).get("surveyUserId"))) {
                     //将未完成的数据存到map中
                     unfinishMap = new HashMap<>();
                     //unfinishMap = surveyUserList.get(i);
@@ -313,7 +314,7 @@ public class PaperServiceImpl implements PaperService {
                     unfinishMap.put("createTime", r.get("createTime"));
                     //计算年龄
                     int age = OrganizationServiceImpl.getAge(surveyUserList.get(i).get("surveyUserBirthdate").toString());
-                    unfinishMap.put("age",age);
+                    unfinishMap.put("age", age);
                     unfinishList.add(unfinishMap);
 //                    for (int j = 0; j < unfinishList.size(); j++) {
 //                        System.out.println("问卷名称：++++++++++++++++++++++++++++++++++++++++++++++"+unfinishList.get(j).get("paperName"));
@@ -322,9 +323,9 @@ public class PaperServiceImpl implements PaperService {
                     continue;
                 }
             }
-            if(finishSurveyList != null && finishSurveyList.size()>0){
-                surveyUserList.get(i).put("resultList",finishSurveyList);
-                surveyUserList.get(i).put("age",OrganizationServiceImpl.getAge(surveyUserList.get(i).get("surveyUserBirthdate").toString()));
+            if (finishSurveyList != null && finishSurveyList.size() > 0) {
+                surveyUserList.get(i).put("resultList", finishSurveyList);
+                surveyUserList.get(i).put("age", OrganizationServiceImpl.getAge(surveyUserList.get(i).get("surveyUserBirthdate").toString()));
                 finishSurveyUserList2.add(surveyUserList.get(i));
 
                 //finishSurveyUserList2.get(finishj).put("resultList",finishSurveyList);
@@ -361,7 +362,7 @@ public class PaperServiceImpl implements PaperService {
         //根据问卷被调查老人id和问卷id删除回答结果
         //Map<String, Object> resultMap = paperMapper.selectResultByResultId(paramsMap);
         //删除问卷结果表
-        int numResult =  paperMapper.deleteResultByResultId(paramsMap);
+        int numResult = paperMapper.deleteResultByResultId(paramsMap);
         //根据问卷被调查老人id和问卷id删除回答结果
         if (numResult != 0) {
             int numAnswer = paperMapper.deleteAnswerByResultId(paramsMap);
@@ -436,37 +437,38 @@ public class PaperServiceImpl implements PaperService {
         //用户集合（含老人信息）
         List<Map<String, Object>> userList2 = new ArrayList<>();
         //老人list
-        List<Map<String, Object>> surveyList1 ;
+        List<Map<String, Object>> surveyList1;
         //老人list(含result)
         List<Map<String, Object>> surveyList2;
         //老人问卷结果集合
         List<Map<String, Object>> surveyResultList;
 
-            for (int i = 0; i < userList.size(); i++) {
-                surveyList2 = new ArrayList<>();
-                //用户id查询result
-                surveyList1 = organizationMapper.selectSurveyUserByAppUserId(userList.get(i));
-                if(surveyList1 != null && surveyList1.size()>0){
-                    for (int j = 0; j < surveyList1.size() ; j++) {
-                        surveyList2.add(surveyList1.get(j));
-                        //根据老人id查询result
-                        surveyResultList = paperMapper.selectResultBySurveyId(surveyList1.get(j));
-                        if(surveyResultList != null && surveyResultList.size()>0){
-                            surveyList2.get(j).put("resultList",surveyResultList);
-                        }
+        for (int i = 0; i < userList.size(); i++) {
+            surveyList2 = new ArrayList<>();
+            //用户id查询result
+            surveyList1 = organizationMapper.selectSurveyUserByAppUserId(userList.get(i));
+            if (surveyList1 != null && surveyList1.size() > 0) {
+                for (int j = 0; j < surveyList1.size(); j++) {
+                    surveyList2.add(surveyList1.get(j));
+                    //根据老人id查询result
+                    surveyResultList = paperMapper.selectResultBySurveyId(surveyList1.get(j));
+                    if (surveyResultList != null && surveyResultList.size() > 0) {
+                        surveyList2.get(j).put("resultList", surveyResultList);
                     }
                 }
-                userList2.add(userList.get(i));
-                if(surveyList2 != null && surveyList2.size()>0){
-                    userList2.get(i).put("surveyList",surveyList2);
-                }
             }
+            userList2.add(userList.get(i));
+            if (surveyList2 != null && surveyList2.size() > 0) {
+                userList2.get(i).put("surveyList", surveyList2);
+            }
+        }
 
         return userList2;
     }
 
     /**
      * 根据评估员id查询老人及问卷结果表
+     *
      * @param jsonObj
      * @return
      */
@@ -484,17 +486,17 @@ public class PaperServiceImpl implements PaperService {
         //老人年龄
         int age = 0;
 
-        for (int i = 0; i < surveyList.size() ; i++) {
+        for (int i = 0; i < surveyList.size(); i++) {
             surveyResultList = new ArrayList<>();
             age = OrganizationServiceImpl.getAge(surveyList.get(i).get("surveyUserBirthdate").toString());
             //age = surveyList.get(i).get("surveyUserBirthdate")
-            for (int j = 0; j < resultList.size() ; j++) {
-                if(surveyList.get(i).get("surveyUserId").equals(resultList.get(j).get("surveyUserId")) && resultList.get(j).get("resultStatus").toString().equals("10")){
+            for (int j = 0; j < resultList.size(); j++) {
+                if (surveyList.get(i).get("surveyUserId").equals(resultList.get(j).get("surveyUserId")) && resultList.get(j).get("resultStatus").toString().equals("10")) {
                     surveyResultList.add(resultList.get(j));
                 }
             }
-            if(surveyResultList != null && surveyResultList.size() > 0){
-                surveyList.get(i).put("age",age);
+            if (surveyResultList != null && surveyResultList.size() > 0) {
+                surveyList.get(i).put("age", age);
                 surveyList.get(i).put("resultList", surveyResultList);
                 surveyList2.add(surveyList.get(i));
             }
@@ -509,7 +511,7 @@ public class PaperServiceImpl implements PaperService {
      * @return
      * @throws Exception
      */
-    public String expotResultByResultId(JSONObject jsonObj,HttpServletResponse response) throws Exception {
+    public String expotResultByResultId(JSONObject jsonObj, HttpServletResponse response) throws Exception {
         //获取前端传过来的resultId
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObj.toString());
         //查询result
@@ -534,9 +536,9 @@ public class PaperServiceImpl implements PaperService {
         //导出字符串list
         List<String> stringList = new ArrayList<>();
         //地址map
-        Map<String,Object> surveyMap = new HashMap<>();
+        Map<String, Object> surveyMap = new HashMap<>();
         //评估员信息
-        Map<String,Object>  appUserMap = userMapper.selectAppUserByAppUserId(surveyUserMap);
+        Map<String, Object> appUserMap = userMapper.selectAppUserByAppUserId(surveyUserMap);
 
         if (optionList != null && optionList.size() > 0 && answerList != null && answerList.size() > 0) {
             for (int i = 0; i < optionList.size(); i++) {
@@ -557,16 +559,16 @@ public class PaperServiceImpl implements PaperService {
 
         //拼接地址
         String surveyAddress = "";
-        surveyMap.put("code",surveyUserMap.get("provinceCode").toString());
+        surveyMap.put("code", surveyUserMap.get("provinceCode").toString());
         surveyMap = organizationMapper.selectAreaByCode(surveyMap);
-        surveyAddress = surveyAddress+surveyMap.get("areaName").toString();
-        surveyMap.put("code",surveyUserMap.get("cityCode").toString());
+        surveyAddress = surveyAddress + surveyMap.get("areaName").toString();
+        surveyMap.put("code", surveyUserMap.get("cityCode").toString());
         surveyMap = organizationMapper.selectAreaByCode(surveyMap);
-        surveyAddress = surveyAddress+surveyMap.get("areaName").toString();
-        surveyMap.put("code",surveyUserMap.get("countyCode").toString());
+        surveyAddress = surveyAddress + surveyMap.get("areaName").toString();
+        surveyMap.put("code", surveyUserMap.get("countyCode").toString());
         surveyMap = organizationMapper.selectAreaByCode(surveyMap);
-        surveyAddress = surveyAddress+surveyMap.get("areaName").toString();
-        System.out.println("地址：===================================="+surveyAddress);
+        surveyAddress = surveyAddress + surveyMap.get("areaName").toString();
+        System.out.println("地址：====================================" + surveyAddress);
 
         //设置导出字符串
         stringList.add(resultMap.get("paperName").toString() + "(总分：" + resultMap.get("paperScore").toString() + "分)");
@@ -595,31 +597,35 @@ public class PaperServiceImpl implements PaperService {
             }
             stringList.add("\n\n");
         }
-
-        return PDF(stringList,response);
+        return PDF(stringList, response, String.valueOf(jsonObj.get("uuId")));
     }
 
-    public static String PDF(List<String> stringList,HttpServletResponse response) throws Exception {
+    public static String PDF(List<String> stringList, HttpServletResponse response, String UUID) throws Exception {
+        //获取部署地址
+        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        String path1 = path + UUID + ".pdf";
         //导出pdf
         // 第一步，实例化一个document对象
         Document document = new Document();
         // 第二步，设置要到出的路径
-        FileOutputStream out = new FileOutputStream("D:/office/老年人问卷调查.pdf");
+        FileOutputStream out = new FileOutputStream(path1);
         // 如果是浏览器通过request请求需要在浏览器中输出则使用下面方式
 //        OutputStream out = response.getOutputStream();
 //        response.setContentType("text/pdf;charset=UTF-8");
         //response.setHeader("content-type", "text/html;charset=UTF-8");
         // 第三步,设置字符
         BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", false);
+        //BaseFont bfChinese = BaseFont.createFont("iso-8859-1", "utf-8", false);
         Font font1 = new Font(bfChinese, 12.0F, 0);
         font1.setStyle(Font.BOLD);
+
         Font fontZH = new Font(bfChinese, 12.0F, 0);
         // 第四步，将pdf文件输出到磁盘
         PdfWriter writer = PdfWriter.getInstance(document, out);
         // 第五步，打开生成的pdf文件
         document.open();
         // 第六步,设置内容
-        document.add(new Paragraph(new Chunk(stringList.get(0),font1).setLocalDestination(stringList.get(0))));
+        document.add(new Paragraph(new Chunk(stringList.get(0), font1).setLocalDestination(stringList.get(0))));
         for (int i = 1; i < stringList.size(); i++) {
             document.add(new Paragraph(new Chunk(stringList.get(i), fontZH).setLocalDestination(stringList.get(i))));
         }
@@ -631,7 +637,7 @@ public class PaperServiceImpl implements PaperService {
         // 第七步，关闭document
         document.close();
 
-        return "导出pdf成功~";
+        return path1;
     }
 
 

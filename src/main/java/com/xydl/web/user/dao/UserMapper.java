@@ -31,4 +31,9 @@ public interface UserMapper {
      * 根据评估员id查询评估员信息
      */
     public Map<String,Object> selectAppUserByAppUserId(Map<String, Object> paramsMap);
+
+    /**
+     * 查询手机号码
+     */
+    public List<Map<String,Object>> selectAppUser();
 } 

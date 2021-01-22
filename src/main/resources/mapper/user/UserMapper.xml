@@ -44,6 +44,9 @@
             user_status as userStatus
         from t_app_user where user_id = #{appUserId}
     </select>
+    <select id="selectAppUser" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select phone_number as phoneNumber from t_app_user
+    </select>
 
     <!-- 新增用户 -->
     <insert id="saveAppUser" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="id">

@@ -32,4 +32,9 @@ public class UserServiceImpl implements UserService {
         paramsMap.put("appUserId",IdUtils.fastSimpleUUID());
         return userMapper.insertAppuser(paramsMap);
     }
+
+    @Override
+    public List<Map<String, Object>> selectAppUser() {
+        return userMapper.selectAppUser();
+    }
 }
