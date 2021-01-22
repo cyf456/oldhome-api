@@ -3,6 +3,7 @@ package com.xydl.web.business.controller;
 import com.xydl.common.annotation.CheckToken;
 import com.xydl.common.utils.CommonResult;
 import com.xydl.web.business.service.PaperService;
+import com.xydl.web.user.service.TokenService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.Map;
 public class PaperController {
     @Autowired
     private PaperService paperService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 根据机构Id查询问卷
@@ -88,10 +92,13 @@ public class PaperController {
     @RequestMapping(value = "/answerPaper",method = RequestMethod.POST)
     public CommonResult answerPaper(HttpServletRequest request){
         String requestJson = (String)request.getAttribute("requestJson");
-        Map<String,Object> map = new HashedMap();
+        Map<String,Object> map = new HashMap<>();
         try {
             //将string类型转换成json
             JSONObject jsonObject = JSONObject.fromObject(requestJson);
+            JSONObject userObj = tokenService.getLoginUser(request);
+            userObj.put("appUserId",userObj.get("userId"));
+            jsonObject.put("appUserId",userObj.get("appUserId"));
             map = paperService.answerPaper(jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,12 +114,15 @@ public class PaperController {
     @CheckToken
     @RequestMapping(value = "/getResultByAppUserId",method = RequestMethod.POST)
     public CommonResult getResultByAppUserId(HttpServletRequest request){
-        String requestJson = (String)request.getAttribute("requestJson");
+        //String requestJson = (String)request.getAttribute("requestJson");
         Map<String,Object> map = new HashMap<>();
         try {
             //将string类型转换成json
-            JSONObject jsonObject = JSONObject.fromObject(requestJson);
-            map = paperService.selectResultByAppUserId(jsonObject);
+            //JSONObject jsonObject = JSONObject.fromObject(requestJson);
+            JSONObject userObj = tokenService.getLoginUser(request);
+            userObj.put("appUserId",userObj.get("userId"));
+            System.out.println("userObj==============================="+userObj.get("userId"));
+            map = paperService.selectResultByAppUserId(userObj);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -188,17 +198,38 @@ public class PaperController {
      */
     @CheckToken
     @RequestMapping(value = "/expotResultByResultId",method = RequestMethod.POST)
-    public CommonResult expotResultByResultId(HttpServletRequest request){
+    public CommonResult expotResultByResultId(HttpServletRequest request, HttpServletResponse response){
         //获取前端传过来的问卷调查结果
         String requestJson = (String)request.getAttribute("requestJson");
         String a = "";
         try {
             //将string类型转换成json
             JSONObject jsonObject = JSONObject.fromObject(requestJson);
-            a = paperService.expotResultByResultId(jsonObject);
+            a = paperService.expotResultByResultId(jsonObject,response);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return CommonResult.success(a);
+    }
+
+    /**
+     * 根据评估员id查询老人及结果
+     * @param
+     * @return
+     */
+    @CheckToken
+    @RequestMapping(value = "/getSurveyResultByAppUserId",method = RequestMethod.POST)
+    public CommonResult getSurveyResultByAppUserId(HttpServletRequest request, HttpServletResponse response){
+        //获取前端传过来的问卷调查结果
+        String requestJson = (String)request.getAttribute("requestJson");
+        List<Map<String,Object>> objectList = new ArrayList<>();
+        try {
+            //将string类型转换成json
+            JSONObject jsonObject = JSONObject.fromObject(requestJson);
+            objectList = paperService.selectSurveyResultByAppUserId(jsonObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CommonResult.success(objectList);
     }
 }

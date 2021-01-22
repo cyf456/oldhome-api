@@ -47,22 +47,37 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationMap;
     }
 
+
     /**
      * 添加老人信息
      * @param jsonObject
      * @return
      */
-    public int insertSurveyUser(JSONObject jsonObject) throws ParseException {
+    public Map<String,Object> insertSurveyUser(JSONObject jsonObject) throws ParseException {
+        Map<String,Object> map = new HashMap<>();
         //将json类型转换成Map集合
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObject.toString());
-        //添加id
-        paramsMap.put("surveyUserId", IdUtils.fastSimpleUUID());
         //把出生日期字符串转换为日期格式。
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         Date  birthDay = sdf.parse(paramsMap.get("surveyUserBirthdate").toString());
         paramsMap.put("surveyUserBirthdate",birthDay);
+        //老人id
+        String surveyUserId="";
+        int num = 0;
+        if(paramsMap.get("surveyUserId").toString().equals("0")){
+            surveyUserId = IdUtils.fastSimpleUUID();
+
+            //添加id
+            paramsMap.put("surveyUserId", surveyUserId);
+            num = organizationMapper.insertSurveyUser(paramsMap);
+        }else {
+            surveyUserId = paramsMap.get("surveyUserId").toString();
+            num = organizationMapper.updateSurveyUser(paramsMap);
+        }
+        map.put("surveyUserId",surveyUserId);
+        map.put("num",num);
         //添加机构信息
-        return organizationMapper.insertSurveyUser(paramsMap);
+        return map;
     }
 
     /**
@@ -82,16 +97,40 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     public List<Map<String, Object>> selectSurveyUserByAppUserId(JSONObject jsonObj) throws Exception {
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObj.toString());
-        //老人list(出生年月)
+        //查询地址
+        Map<String, Object> areaMap = new HashMap<>();
+
+        //老人list
         List<Map<String, Object>> surveyUserList = organizationMapper.selectSurveyUserByAppUserId(paramsMap);
-        //老人list(年龄)
+        //老人list(含地区)
         List<Map<String, Object>> surveyUserList2 = new ArrayList<>();
-        if(surveyUserList != null && surveyUserList.size() > 0){
-            for (int i = 0; i < surveyUserList.size() ; i++) {
-                surveyUserList2.add(surveyUserList.get(i));
-                surveyUserList2.get(i).put("age",getAge(surveyUserList2.get(i).get("age").toString()));
-            }
+        for (int i = 0; i < surveyUserList.size(); i++) {
+            String birthDay = surveyUserList.get(i).get("surveyUserBirthdate").toString();
+            String birthDay2 = birthDay.substring(0,10);
+            surveyUserList2.add(surveyUserList.get(i));
+
+            //省
+            areaMap.put("code",surveyUserList.get(i).get("provinceCode"));
+            areaMap = organizationMapper.selectAreaByCode(areaMap);
+            surveyUserList2.get(i).put("provinceAddress",areaMap.get("areaName"));
+            //市
+            areaMap.put("code",surveyUserList.get(i).get("cityCode"));
+            areaMap = organizationMapper.selectAreaByCode(areaMap);
+            surveyUserList2.get(i).put("cityAddress",areaMap.get("areaName"));
+            //县
+            areaMap.put("code",surveyUserList.get(i).get("countyCode"));
+            areaMap = organizationMapper.selectAreaByCode(areaMap);
+            surveyUserList2.get(i).put("countyAddress",areaMap.get("areaName"));
+            surveyUserList2.get(i).put("surveyUserBirthdate",birthDay2);
         }
+//        //老人list(年龄)
+//        List<Map<String, Object>> surveyUserList2 = new ArrayList<>();
+//        if(surveyUserList != null && surveyUserList.size() > 0){
+//            for (int i = 0; i < surveyUserList.size() ; i++) {
+//                surveyUserList2.add(surveyUserList.get(i));
+//                surveyUserList2.get(i).put("age",getAge(surveyUserList2.get(i).get("age").toString()));
+//            }
+//        }
         return surveyUserList2;
     }
 

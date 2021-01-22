@@ -36,14 +36,27 @@ public class UserController {
     }
 
 
-
+    /**
+     * 添加评估员
+     * @param request
+     * @return
+     */
     @CheckToken
-    @Encrypt
     @RequestMapping(value = "/register",method = RequestMethod.POST)
     public CommonResult register(HttpServletRequest request){
         String requestJson = (String) request.getAttribute("requestJson");
         JSONObject jsonObj = JSONObject.fromObject(requestJson);
         int result = userService.saveAppUser(jsonObj);
+        return CommonResult.success(result);
+    }
+
+    @CheckToken
+    //@Encrypt
+    @RequestMapping(value = "/addAppUser",method = RequestMethod.POST)
+    public CommonResult addAppUser(HttpServletRequest request){
+        String requestJson = (String) request.getAttribute("requestJson");
+        JSONObject jsonObj = JSONObject.fromObject(requestJson);
+        int result = userService.insertAppUser(jsonObj);
         return CommonResult.success(result);
     }
 }

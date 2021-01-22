@@ -59,7 +59,7 @@ public class AppInterceptor implements HandlerInterceptor{
         //输入参数
         String requestBody = HttpHelper.getBodyString(request);
         log.info("输入参数：" + requestBody);
-        System.out.println("======================================"+handler);
+        System.out.println("======================================"+requestBody);
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
 

@@ -32,7 +32,7 @@ public interface OrganizationService {
      * @param jsonObject
      * @return
      */
-    public int insertSurveyUser(JSONObject jsonObject) throws ParseException;
+    public Map<String,Object> insertSurveyUser(JSONObject jsonObject) throws ParseException;
 
     /**
      * 根据机构id查询用户

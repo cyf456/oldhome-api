@@ -42,6 +42,12 @@ public interface OrganizationMapper {
     public int insertSurveyUser(Map<String, Object> paramsMap);
 
     /**
+     * 修改养老院老人
+     * @return
+     */
+    public int updateSurveyUser(Map<String, Object> paramsMap);
+
+    /**
      * 根据id查询老人
      *
      * @return 机构
@@ -62,4 +68,11 @@ public interface OrganizationMapper {
      */
     public List<Map<String,Object>> selectAppUserByOrganizationId(Map<String, Object> paramsMap);
 
+
+    /**
+     * 查询地址
+     *
+     * @return 机构
+     */
+    public Map<String,Object> selectAreaByCode(Map<String, Object> paramsMap);
 }

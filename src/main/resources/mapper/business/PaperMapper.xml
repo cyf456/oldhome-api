@@ -7,11 +7,10 @@
     paper_id as paperId,
     paper_name as paperName,
     paper_desc as paperDesc,
-    paper_status as paperStatus,
-    paper_sort paperSort,
+    paper_sort as paperSort,
     expected_complete_time as expectedCompleteTime
     from t_paper
-    where organization_id = #{organizationId};
+    where organization_id = #{organizationId} and paper_status = '2';
     </select>
     <!--    根据问卷id查询题目-->
     <select id="selectQuestionByPaperId" parameterType="java.util.Map" resultType="java.util.Map">
@@ -24,7 +23,7 @@
         question_sort as questionSort,
         required_flag as requiredFlag
         from t_question
-        where paper_id = #{paperId}
+        where paper_id = #{paperId} ORDER BY question_sort ASC
     </select>
     <!--  根据问卷id查询选项  -->
     <select id="selectOptionByPaperId" parameterType="java.util.Map" resultType="java.util.Map">
@@ -36,7 +35,7 @@
         option_score as optionScore,
         option_sort as optionSort
         from t_option
-        WHERE paper_id = #{paperId}
+        WHERE paper_id = #{paperId} ORDER BY option_sort ASC
     </select>
     <!--   根据optionId查询选项 -->
     <select id="selectOptionByOptionId" parameterType="java.util.Map" resultType="java.util.Map">
@@ -82,9 +81,9 @@
         SELECT count(*) AS questionNum from t_question where paper_id = #{paperId}
     </select>
     <!--  查询指定paper_id和survey_user_id并根据question分组，返回组数  -->
-    <select id="answerNumByQuestion" parameterType="java.util.Map" resultType="java.lang.Integer">
-        SELECT count(*) AS answerNum from (SELECT count(*) from t_answer WHERE paper_id = #{paperId} and survey_user_id = #{surveyUserId} GROUP BY question_id)answer
-    </select>
+<!--    <select id="answerNumByQuestion" parameterType="java.util.Map" resultType="java.lang.Integer">-->
+<!--        SELECT count(*) AS answerNum from (SELECT count(*) from t_answer WHERE paper_id = #{paperId} and survey_user_id = #{surveyUserId} GROUP BY question_id)answer-->
+<!--    </select>-->
     <!--  根据appUserId查询问卷结果  -->
     <select id="selectResultByAppUserId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
@@ -95,9 +94,10 @@
         paper_name as paperName,
         paper_score as paperScore,
         result_status as resultStatus,
-        create_time as createTime
+        DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
         from t_paper_result where app_user_id = #{appUserId}
     </select>
+    <!--  根据评估结果id查询评估结果  -->
     <select id="selectResultByResultId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
         survey_user_id AS surveyUserId,
@@ -105,9 +105,10 @@
         paper_name AS paperName,
         paper_score AS paperScore,
         result_status as resultStatus,
-        create_time as createTime
+        DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
         from t_paper_result where paper_result_id = #{paperResultId}
     </select>
+    <!--  根据评估结果id查询回答的选项  -->
     <select id="selectAnswerByResultId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT answer_id as answerId,
         option_id as optionId
@@ -128,6 +129,16 @@
         #{item.optionId}
         </foreach>
         )
+    </select>
+    <select id="selectResultBySurveyId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        survey_user_id AS surveyUserId,
+        paper_id AS paperId,
+        paper_name AS paperName,
+        paper_score AS paperScore,
+        result_status as resultStatus,
+        DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
+        from t_paper_result where survey_user_id = #{surveyUserId}
     </select>
     <!--添加paperResult-->
     <insert id="insertPaperResult" parameterType="java.util.Map">
@@ -158,9 +169,9 @@
         delete from t_paper_result where paper_result_id = #{paperResultId}
     </delete>
 <!-- 根据问卷被调查老人id和问卷id删除回答结果-->
-    <delete id="deleteAnswerByPaperId" parameterType="java.util.Map">
-        delete from t_answer where survey_user_id = #{surveyUserId} and paper_id = #{paperId}
-    </delete>
+<!--    <delete id="deleteAnswerByPaperId" parameterType="java.util.Map">-->
+<!--        delete from t_answer where survey_user_id = #{surveyUserId} and paper_id = #{paperId}-->
+<!--    </delete>-->
     <delete id="deleteAnswerByResultId" parameterType="java.util.Map">
         delete from t_answer where paper_result_id = #{paperResultId}
     </delete>

@@ -6,7 +6,20 @@
     </select>
 
     <select id="getUserInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        select user_id,user_name as userName,phone_number as phoneNumber,password from t_app_user where phone_number = #{phoneNumber} and user_name = #{userName}
+        select
+            user_id as userId,
+            user_name as userName,
+            sex,
+            age,
+            phone_number as phoneNumber,
+            password,
+            parent_id as parentId,
+            organization_id as organizationId,
+            organization_name as organizationName,
+            user_type as userType,
+            user_source as userSource,
+            user_status as userStatus
+        from t_app_user where phone_number = #{phoneNumber} and user_name = #{userName}
     </select>
     <select id="selectAppUserByOrganization" parameterType="java.util.HashMap" resultType="java.util.Map">
         SELECT
@@ -14,6 +27,22 @@
         user_name as appUserName,
         phone_number as phoneNumber
         from t_app_user where organization_id =#{organizationId}
+    </select>
+    <select id="selectAppUserByAppUserId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+         select
+            user_id as userId,
+            user_name as appUserName,
+            sex,
+            age,
+            phone_number as phoneNumber,
+            password,
+            parent_id as parentId,
+            organization_id as organizationId,
+            organization_name as organizationName,
+            user_type as userType,
+            user_source as userSource,
+            user_status as userStatus
+        from t_app_user where user_id = #{appUserId}
     </select>
 
     <!-- 新增用户 -->
@@ -34,4 +63,32 @@
             sysdate()
         )
     </insert>
+    <insert id="insertAppuser" parameterType="java.util.Map">
+        insert into t_app_user(
+            user_id,
+            user_name,
+            sex,
+            age,
+            phone_number,
+            organization_name,
+            organization_id,
+            user_type,
+            user_source,
+            user_status,
+            create_time
+        )values(
+            #{appUserId},
+            #{userName},
+            #{sex},
+            #{age},
+            #{phoneNumber},
+            #{organizationName},
+            #{organizationId},
+            2,
+            1,
+            1,
+            sysdate()
+        )
+    </insert>
+
 </mapper>

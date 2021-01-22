@@ -10,11 +10,13 @@
             survey_user_birthdate,
             phone_number,
             second_user_name,
-            survey_user_address,
             detail_address,
             organization_id,
             remarks,
             user_id,
+            province_code,
+            city_code,
+            county_code,
             create_time
         )VALUES (
             #{surveyUserId},
@@ -23,14 +25,28 @@
             #{surveyUserBirthdate},
             #{phoneNumber},
             #{secondUserName},
-            #{surveyUserAddress},
             #{detailAddress},
             #{organizationId},
             #{remarks},
             #{userId},
+            #{provinceCode},
+            #{cityCode},
+            #{countyCode},
         NOW()
         )
     </insert>
+
+    <!--  修改养老院老人  -->
+    <update id="updateSurveyUser" parameterType="java.lang.String">
+        UPDATE t_survey_user
+        set phone_number  = #{phoneNumber},
+            second_user_name = #{secondUserName},
+            province_code = #{provinceCode},
+            city_code = #{cityCode},
+            county_code = #{countyCode},
+            detail_address = #{detailAddress}
+        where survey_user_id = #{surveyUserId}
+    </update>
 
     <!--根据id查询机构信息-->
     <select id="selectOrganizationById" parameterType="java.lang.String" resultType="java.util.Map" >
@@ -40,7 +56,7 @@
             organization_desc as organizationDesc,
             organization_phone as organizationPhone,
             organization_address as organizationAddress,
-            create_time as createTime
+            DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
         from t_organization
         where
         organization_id = #{organizationId}
@@ -61,42 +77,55 @@
 
     <select id="selectAppUserByOrganizationId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
-            user_name as userName,
-            sex,
-            age,
-            phone_number as phoneNumber,
-            password,
-            parent_id as parentId,
-            organization_name as organizationName,
-            user_type as userType,
-            user_source as userSource,
-            user_status as userStatus
+            user_id as appUserId,
+            user_name as userName
+--             sex,
+--             age,
+--             phone_number as phoneNumber,
+--             password,
+--             parent_id as parentId,
+--             organization_name as organizationName,
+--             user_type as userType,
+--             user_source as userSource,
+--             user_status as userStatus
         from t_app_user
         where organization_id = #{organizationId}
 
     </select>
+    <!--  根据老人id查询老人信息  -->
     <select id="selectSurveyUserBySurveyUserId" parameterType="java.util.Map" resultType="java.util.Map">
         select
+        user_id as appUserId,
         survey_user_name as surveyUserName,
         second_user_name as secondUserName,
-        survey_user_address as surveyUserAddress,
+        province_code as provinceCode,
+        city_code as cityCode,
+        county_code as countyCode,
         survey_user_sex as surveyUserSex,
-        create_time as createTime,
+        DATE_FORMAT(create_time, '%Y-%m-%d') as createTime,
         survey_user_birthdate as surveyUserBirthdate,
         detail_address as detailAddress
         from t_survey_user
         where survey_user_id = #{surveyUserId}
     </select>
+    <!--  根据评估员id查询老人  -->
     <select id="selectSurveyUserByAppUserId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
         survey_user_id as surveyUserId,
         survey_user_name as surveyUserName,
         survey_user_sex as surveyUserSex,
-        survey_user_birthdate as age,
-        survey_user_address as surveyUserAddress,
+        DATE_FORMAT(survey_user_birthdate, '%Y-%m-%d') as surveyUserBirthdate,
+        phone_number as phoneNumber,
+        second_user_name as scondUserName,
+        province_code as provinceCode,
+        city_code as cityCode,
+        county_code as countyCode,
         detail_address as detailAddress
         FROM `t_survey_user` WHERE user_id = #{appUserId}
-
    </select>
+    <!--  查询地址  -->
+    <select id="selectAreaByCode" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT area_name as areaName FROM `t_area` where administrative_code = #{code} ;
+    </select>
 
 </mapper>

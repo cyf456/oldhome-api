@@ -10,4 +10,7 @@ public interface UserService {
     public List<Map<String, Object>> getUserList();
 
     public int saveAppUser(JSONObject jsonObj);
+
+    public int insertAppUser(JSONObject jsonObj);
+
 }

@@ -2,7 +2,9 @@ package com.xydl.web.business.controller;
 
 import com.xydl.common.annotation.CheckToken;
 import com.xydl.common.utils.CommonResult;
+import com.xydl.common.utils.StringUtils;
 import com.xydl.web.business.service.OrganizationService;
+import com.xydl.web.user.service.TokenService;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +35,8 @@ import java.util.Map;
 public class OrganizationController {
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 根据id查询机构
@@ -46,6 +50,9 @@ public class OrganizationController {
         Map<String,Object> organizationMap = new HashMap<>();
         try {
             JSONObject jsonObject = JSONObject.fromObject(requestJson);
+            if(StringUtils.isEmpty(jsonObject.getString("organizationId"))){
+                return CommonResult.error("1001","机构id不能为空");
+            }
             organizationMap = organizationService.selectOrganizationById(jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,14 +69,28 @@ public class OrganizationController {
     @RequestMapping(value = "/addSurveyUser",method = RequestMethod.POST)
     public CommonResult addSurveyUser(HttpServletRequest request){
         String requestJson = (String)request.getAttribute("requestJson");
-        int num=0;
+        Map<String,Object> map = new HashMap<>();
         try {
             JSONObject jsonObject = JSONObject.fromObject(requestJson);
-            num = organizationService.insertSurveyUser(jsonObject);
+            JSONObject userObj = tokenService.getLoginUser(request);
+            jsonObject.put("userId",userObj.get("userId").toString());
+            if(
+                    StringUtils.isEmpty(jsonObject.getString("surveyUserName")) ||
+                            StringUtils.isEmpty(jsonObject.getString("surveyUserSex")) ||
+                            StringUtils.isEmpty(jsonObject.getString("surveyUserBirthdate")) ||
+                            StringUtils.isEmpty(jsonObject.getString("phoneNumber")) ||
+                            StringUtils.isEmpty(jsonObject.getString("secondUserName")) ||
+                            //StringUtils.isEmpty(jsonObject.getString("surveyUserAddress")) ||
+                            StringUtils.isEmpty(jsonObject.getString("detailAddress")) ||
+                            StringUtils.isEmpty(jsonObject.getString("organizationId"))
+            ){
+                return CommonResult.error("1001","信息不全");
+            }
+             map = organizationService.insertSurveyUser(jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return CommonResult.success(num);
+        return CommonResult.success(map);
     }
 
     /**
@@ -99,11 +120,13 @@ public class OrganizationController {
     @CheckToken
     @RequestMapping(value = "/getSurveyUserByAppUserId",method = RequestMethod.POST)
     public CommonResult getSurveyUserByAppUserId(HttpServletRequest request){
-        String requestJson = (String)request.getAttribute("requestJson");
+        //String requestJson = (String)request.getAttribute("requestJson");
         List<Map<String,Object>> mapList = new ArrayList<>();
         try {
-            JSONObject jsonObject = JSONObject.fromObject(requestJson);
-            mapList = organizationService.selectSurveyUserByAppUserId(jsonObject);
+            //JSONObject jsonObject = JSONObject.fromObject(requestJson);
+            JSONObject userObj = tokenService.getLoginUser(request);
+            userObj.put("appUserId",userObj.get("userId"));
+            mapList = organizationService.selectSurveyUserByAppUserId(userObj);
         } catch (Exception e) {
             e.printStackTrace();
         }

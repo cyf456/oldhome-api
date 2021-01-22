@@ -19,4 +19,16 @@ public interface UserMapper {
      * @return
      */
     public List<Map<String,Object>> selectAppUserByOrganization(Map<String, Object> paramsMap);
+
+    /**
+     * 新增用户信息
+     * @param paramsMap
+     * @return
+     */
+    public int insertAppuser(Map<String, Object> paramsMap);
+
+    /**
+     * 根据评估员id查询评估员信息
+     */
+    public Map<String,Object> selectAppUserByAppUserId(Map<String, Object> paramsMap);
 } 

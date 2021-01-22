@@ -63,12 +63,12 @@ public interface PaperMapper {
      */
     public int questionNumByPaperId(Map<String, Object> paramsMap);
 
-    /**
-     * 查询指定paper_id和survey_user_id并根据question分组，返回组数
-     * @param paramsMap
-     * @return
-     */
-    public int answerNumByQuestion(Map<String, Object> paramsMap);
+//    /**
+//     * 查询指定paper_id和survey_user_id并根据question分组，返回组数
+//     * @param paramsMap
+//     * @return
+//     */
+//    public int answerNumByQuestion(Map<String, Object> paramsMap);
 
 
 
@@ -78,10 +78,10 @@ public interface PaperMapper {
      */
     public List<Map<String,Object>> selectAnswerByResultId(Map<String,Object> paramsMap);
 
-    /**
-     * 根据问卷被调查老人id和问卷id删除回答结果
-     */
-    public int deleteAnswerByPaperId(Map<String,Object> paramsMap);
+//    /**
+//     * 根据问卷被调查老人id和问卷id删除回答结果
+//     */
+//    public int deleteAnswerByPaperId(Map<String,Object> paramsMap);
 
     /**
      * 保存回答结果answer
@@ -89,7 +89,7 @@ public interface PaperMapper {
     public int batchSaveAnswerList(List<Map<String,Object>> list);
 
     /**
-     * 根据问卷被result删除回答结果
+     * 根据问卷result删除回答结果
      */
     public int deleteAnswerByResultId(Map<String,Object> paramsMap);
 
@@ -100,7 +100,7 @@ public interface PaperMapper {
     public int deleteResultByResultId(Map<String, Object> paramsMap);
 
     /**
-     * 根据问卷被调查老人id和问卷id查询result
+     * 根据问卷结果id查询result
      */
     public Map<String,Object> selectResultByResultId(Map<String, Object> paramsMap);
 
@@ -108,6 +108,11 @@ public interface PaperMapper {
      * 根据appUserId查询问卷结果
      */
     public List<Map<String,Object>> selectResultByAppUserId(Map<String, Object> paramsMap);
+
+    /**
+     * 根据老人id查询问卷结果
+     */
+    public List<Map<String,Object>> selectResultBySurveyId(Map<String, Object> paramsMap);
 
     /**
      * 修改PaperResult

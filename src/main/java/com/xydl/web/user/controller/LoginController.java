@@ -2,6 +2,7 @@ package com.xydl.web.user.controller;
 
 import com.xydl.common.annotation.Encrypt;
 import com.xydl.common.utils.CommonResult;
+import com.xydl.common.utils.StringUtils;
 import com.xydl.web.user.service.LoginService;
 import com.xydl.web.user.service.UserService;
 import net.sf.json.JSONObject;
@@ -31,16 +32,21 @@ public class LoginController {
 //    @Encrypt
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     public CommonResult login(HttpServletRequest request){
-        JSONObject resultObj = new JSONObject();
         String requestJson = (String) request.getAttribute("requestJson");
         log.info("logincontroller:" + requestJson);
         try {
             JSONObject jsonObj = JSONObject.fromObject(requestJson);
-            String token = loginService.login(jsonObj);
-            resultObj.put("token", token);
+            if(StringUtils.isEmpty(jsonObj.getString("phoneNumber"))){
+                return CommonResult.error(1001,"手机号不能为空");
+            }
+
+            if(StringUtils.isEmpty(jsonObj.getString("userName"))){
+                return CommonResult.error(1001,"姓名不能为空");
+            }
+            return loginService.login(jsonObj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return CommonResult.success(resultObj);
+        return CommonResult.success();
     }
 }

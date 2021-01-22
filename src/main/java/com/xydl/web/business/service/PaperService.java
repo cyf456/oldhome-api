@@ -2,6 +2,7 @@ package com.xydl.web.business.service;
 
 import net.sf.json.JSONObject;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public interface PaperService {
      * 根据用户id查询分数
      * @return
      */
-    public Map<String,Object> selectResultByAppUserId(JSONObject jsonObject);
+    public Map<String,Object> selectResultByAppUserId(JSONObject jsonObject) throws Exception;
 
     /**
      * 根据分数Id删除结果
@@ -61,11 +62,18 @@ public interface PaperService {
     /**
      *到出result
      */
-    public String expotResultByResultId(JSONObject jsonObj) throws Exception;
+    public String expotResultByResultId(JSONObject jsonObj, HttpServletResponse response) throws Exception;
 
     /**
      * 根据机构id查询评论员及result
      * @return
      */
     public List<Map<String,Object>> selectAppuserResultByOrganizationId(JSONObject jsonObj);
+
+    /**
+     * 根据评估员id查询老人及结果
+     * @param jsonObj
+     * @return
+     */
+    public List<Map<String,Object>> selectSurveyResultByAppUserId(JSONObject jsonObj) throws Exception;
  }

@@ -1,6 +1,7 @@
 package com.xydl.web.user.service.impl;
 
 import com.xydl.common.utils.JsonUtils;
+import com.xydl.common.utils.uuid.IdUtils;
 import com.xydl.web.user.dao.UserMapper;
 import com.xydl.web.user.service.UserService;
 import net.sf.json.JSONObject;
@@ -23,5 +24,12 @@ public class UserServiceImpl implements UserService {
     public int saveAppUser(JSONObject jsonObj){
         Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObj.toString());
         return userMapper.saveAppUser(paramsMap);
+    }
+
+    @Override
+    public int insertAppUser(JSONObject jsonObj) {
+        Map<String, Object> paramsMap = JsonUtils.jsonStrToMap(jsonObj.toString());
+        paramsMap.put("appUserId",IdUtils.fastSimpleUUID());
+        return userMapper.insertAppuser(paramsMap);
     }
 }
