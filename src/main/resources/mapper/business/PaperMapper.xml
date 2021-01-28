@@ -85,28 +85,47 @@
 <!--        SELECT count(*) AS answerNum from (SELECT count(*) from t_answer WHERE paper_id = #{paperId} and survey_user_id = #{surveyUserId} GROUP BY question_id)answer-->
 <!--    </select>-->
     <!--  根据appUserId查询问卷结果  -->
+
     <select id="selectResultByAppUserId" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT
-        paper_result_id as paperResultId,
-        app_user_id as appUserId,
-        survey_user_id as surveyUserId,
-        paper_id as paperId,
-        paper_name as paperName,
-        paper_score as paperScore,
-        result_status as resultStatus,
-        DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
-        from t_paper_result where app_user_id = #{appUserId}
+    SELECT
+    r.paper_result_id as paperResultId,
+    r.app_user_id as appUserId,
+    r.survey_user_id as surveyUserId,
+    r.paper_id as paperId,
+    r.paper_name as paperName,
+    r.paper_score as paperScore,
+    r.result_status as resultStatus,
+    DATE_FORMAT(r.create_time, '%Y-%m-%d') as createTime,
+    g.grade_name AS gradeName
+    from t_paper_result as r INNER JOIN t_paper_grade as g
+    ON r.paper_id = g.paper_id
+    WHERE
+    r.app_user_id = #{appUserId}
+    AND r.paper_score BETWEEN g.min_score and g.max_score
     </select>
     <!--  根据评估结果id查询评估结果  -->
+<!--    SELECT-->
+<!--    survey_user_id AS surveyUserId,-->
+<!--    paper_id AS paperId,-->
+<!--    paper_name AS paperName,-->
+<!--    paper_score AS paperScore,-->
+<!--    result_status as resultStatus,-->
+<!--    DATE_FORMAT(create_time, '%Y-%m-%d') as createTime-->
+<!--    from t_paper_result where paper_result_id = #{paperResultId}-->
     <select id="selectResultByResultId" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
-        survey_user_id AS surveyUserId,
-        paper_id AS paperId,
-        paper_name AS paperName,
-        paper_score AS paperScore,
-        result_status as resultStatus,
-        DATE_FORMAT(create_time, '%Y-%m-%d') as createTime
-        from t_paper_result where paper_result_id = #{paperResultId}
+		r.survey_user_id AS surveyUserId,
+        r.paper_id AS paperId,
+        r.paper_name AS paperName,
+        r.paper_score AS paperScore,
+        r.result_status AS resultStatus,
+        DATE_FORMAT(r.create_time, '%Y-%m-%d') as createTime,
+		g.grade_name AS gradeName
+        from t_paper_result as r INNER JOIN t_paper_grade as g
+        ON r.paper_id = g.paper_id
+        WHERE
+        r.paper_result_id = #{paperResultId}
+        AND r.paper_score BETWEEN g.min_score and g.max_score
     </select>
     <!--  根据评估结果id查询回答的选项  -->
     <select id="selectAnswerByResultId" parameterType="java.util.Map" resultType="java.util.Map">

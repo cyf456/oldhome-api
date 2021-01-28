@@ -72,3 +72,7 @@ mybatis:
 # AES配置
 aes:
     key: F9BE6D002BC721FB
+
+application:
+    filepath: D:\office2\
+

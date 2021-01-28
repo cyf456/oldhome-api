@@ -9,6 +9,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,10 +46,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/Paper")
 public class PaperController {
+
     @Autowired
     private PaperService paperService;
+
     @Autowired
     private TokenService tokenService;
+
+    @Value("${application.filepath}")
+    public String filepath;
 
     /**
      * 根据机构Id查询问卷
@@ -245,11 +251,11 @@ public class PaperController {
         try {
             //将string类型转换成json
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("paperResultId", paperResultId);
+            jsonObject.put("paperResultId",paperResultId);
             jsonObject.put("uuId", uuId);
+            jsonObject.put("filepath", filepath);
             String path = paperService.expotResultByResultId(jsonObject, response);
-            System.out.println("################");
-            System.out.println(path);
+            //System.out.println(filepath);
             download1(response, path, uuId);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,13 +1,13 @@
 package com.xydl.web.business.service.impl;
 
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.xydl.common.utils.JsonUtils;
 import com.xydl.common.utils.uuid.IdUtils;
+import com.xydl.interceptor.AppInterceptor;
 import com.xydl.web.business.dao.OrganizationMapper;
 import com.xydl.web.business.dao.PaperMapper;
 import com.xydl.web.business.service.PaperService;
@@ -18,7 +18,11 @@ import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
@@ -28,6 +32,7 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.XXXX.com
@@ -50,6 +55,9 @@ public class PaperServiceImpl implements PaperService {
     private OrganizationMapper organizationMapper;
     @Autowired
     private UserMapper userMapper;
+
+    //日志工具类
+    private static final Logger log = LoggerFactory.getLogger(AppInterceptor.class);
 
 
     /**
@@ -294,6 +302,7 @@ public class PaperServiceImpl implements PaperService {
                     finishMap = new HashMap<>();
                     finishMap.put("paperResultId", r.get("paperResultId"));
                     //finishMap.put("surveyUserId", r.get("surveyUserId"));
+                    finishMap.put("gradeName", r.get("gradeName"));
                     finishMap.put("paperId", r.get("paperId"));
                     finishMap.put("paperName", r.get("paperName"));
                     finishMap.put("paperScore", r.get("paperScore"));
@@ -535,6 +544,8 @@ public class PaperServiceImpl implements PaperService {
         List<Map<String, Object>> answerList = paperMapper.selectAnswerByResultId(paramsMap);
         //导出字符串list
         List<String> stringList = new ArrayList<>();
+        //导出题目字符串list
+        List<String> questionStringList = new ArrayList<>();
         //地址map
         Map<String, Object> surveyMap = new HashMap<>();
         //评估员信息
@@ -546,10 +557,10 @@ public class PaperServiceImpl implements PaperService {
 
                 for (int j = 0; j < answerList.size(); j++) {
                     if (answerList.get(j).get("optionId").equals(optionList.get(i).get("optionId"))) {
-                        optionList2.get(i).put("answer", "*");
+                        optionList2.get(i).put("answer", "√");
                         break;
                     } else {
-                        optionList2.get(i).put("answer", "o");
+                        optionList2.get(i).put("answer", "□");
                     }
                 }
             }
@@ -557,22 +568,10 @@ public class PaperServiceImpl implements PaperService {
 
         questionList2 = questionAddOption(questionList, optionList2);
 
-        //拼接地址
-        String surveyAddress = "";
-        surveyMap.put("code", surveyUserMap.get("provinceCode").toString());
-        surveyMap = organizationMapper.selectAreaByCode(surveyMap);
-        surveyAddress = surveyAddress + surveyMap.get("areaName").toString();
-        surveyMap.put("code", surveyUserMap.get("cityCode").toString());
-        surveyMap = organizationMapper.selectAreaByCode(surveyMap);
-        surveyAddress = surveyAddress + surveyMap.get("areaName").toString();
-        surveyMap.put("code", surveyUserMap.get("countyCode").toString());
-        surveyMap = organizationMapper.selectAreaByCode(surveyMap);
-        surveyAddress = surveyAddress + surveyMap.get("areaName").toString();
-        System.out.println("地址：====================================" + surveyAddress);
-
         //设置导出字符串
-        stringList.add(resultMap.get("paperName").toString() + "(总分：" + resultMap.get("paperScore").toString() + "分)");
-        stringList.add("\n\n");
+        stringList.add(resultMap.get("paperName").toString() + "(总得分：" + resultMap.get("paperScore").toString() + "分)");
+
+        stringList.add("评估等级："+ resultMap.get("gradeName").toString());
         stringList.add("评估时间：" + resultMap.get("createTime").toString());
         stringList.add("姓名：" + surveyUserMap.get("surveyUserName").toString());
         if (surveyUserMap.get("surveyUserSex").toString().equals("0")) {
@@ -581,23 +580,123 @@ public class PaperServiceImpl implements PaperService {
             stringList.add("性别：女");
         }
         stringList.add("评估员：" + appUserMap.get("appUserName").toString());
-        stringList.add("地址：" + surveyAddress);
-        stringList.add("详细地址：" + surveyUserMap.get("detailAddress").toString());
+        stringList.add("第二评估员：" + surveyUserMap.get("secondUserName").toString());
+        stringList.add("地址：" + surveyUserMap.get("detailAddress").toString());
         stringList.add("年龄：" + OrganizationServiceImpl.getAge(surveyUserMap.get("surveyUserBirthdate").toString()));
 
-        stringList.add("\n\n");
+        //设置导出题目
         for (int i = 0; i < questionList2.size(); i++) {
-            stringList.add(i + 1 + "." + questionList2.get(i).get("questionName").toString());
+            questionStringList.add(i + 1 + "." + questionList2.get(i).get("questionName").toString());
             JSONArray optionjSON = JSONArray.fromObject(questionList2.get(i).get("optionList"));
             for (int j = 0; j < optionjSON.size(); j++) {
-                stringList.add(optionjSON.getJSONObject(j).get("answer").toString()
+                questionStringList.add(optionjSON.getJSONObject(j).get("answer").toString()
                         + "." + optionjSON.getJSONObject(j).get("optionContent").toString()
                         + "。(" + optionjSON.getJSONObject(j).get("optionScore").toString() + "分)");
-                //stringList.add("\n");
             }
-            stringList.add("\n\n");
+            questionStringList.add("\n");
         }
-        return PDF(stringList, response, String.valueOf(jsonObj.get("uuId")));
+        //return PDF(stringList, response, String.valueOf(jsonObj.get("uuId")));
+        return PDF2(stringList,questionStringList,String.valueOf(jsonObj.getString("uuId")),jsonObj.getString("filepath"));
+    }
+
+    /**
+     * 导出pdf
+     * @param stringList
+     * @param questionStringList
+     * @param UUID
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public static String PDF2(List<String> stringList,List<String> questionStringList, String UUID,String path) throws Exception {
+
+        //获取部署地址
+        //String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        String path1 = path + UUID + ".pdf";
+        //导出pdf
+        // 第一步，实例化一个document对象
+        Document document = new Document();
+        // 第二步，设置要到出的路径
+        FileOutputStream out = new FileOutputStream(path1);
+        // 如果是浏览器通过request请求需要在浏览器中输出则使用下面方式
+//        OutputStream out = response.getOutputStream();
+//        response.setContentType("text/pdf;charset=UTF-8");
+        //response.setHeader("content-type", "text/html;charset=UTF-8");
+        // 第三步,设置字符
+        BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", false);
+        //BaseFont bfChinese = BaseFont.createFont("iso-8859-1", "utf-8", false);
+        Font fontTitle = new Font(bfChinese, 12.0F, 0);
+        fontTitle.setStyle(Font.BOLD);
+        Font fontSurvey = new Font(bfChinese, 12.0F, 0);
+
+        Font fontZH = new Font(bfChinese, 12.0F, 0);
+        // 第四步，将pdf文件输出到磁盘
+        PdfWriter writer = PdfWriter.getInstance(document, out);
+        // 第五步，打开生成的pdf文件
+        document.open();
+        // 第六步,设置内容
+        //设置标题
+        Paragraph title = new Paragraph(new Chunk(stringList.get(0), fontTitle).setLocalDestination(stringList.get(0)));
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+        document.add(new Paragraph(new Chunk("\n", fontZH).setLocalDestination("\n")));
+        document.add(new Paragraph(new Chunk("\n", fontZH).setLocalDestination("\n")));
+
+        //设置老人信息
+        PdfPTable table = new PdfPTable(2);
+        PdfPCell pdfPCell;
+        table.setWidthPercentage(100.0F);
+        table.setHeaderRows(1);
+//        PdfPCell pdfPCell = new PdfPCell(new Phrase("test"));
+//        pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//        pdfPCell.disableBorderSide(15);
+//        //pdfPCell.setBorder(0);
+//        table.setWidthPercentage(100.0F);
+//        table.setHeaderRows(1);
+//        table.getDefaultCell().setHorizontalAlignment(1);
+//        table.addCell(new Paragraph("序号", fontZH));
+//        table.addCell(new Paragraph("结果", fontZH));
+//        table.addCell(new Paragraph("1", fontZH));
+//        table.addCell(pdfPCell);
+        for (int i = 1; i < stringList.size(); i++) {
+            pdfPCell = new PdfPCell(new Phrase(stringList.get(i),fontSurvey));
+            //pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            pdfPCell.disableBorderSide(15);
+            //pdfPCell.setBackgroundColor(new BaseColor(245, 245, 245));
+            pdfPCell.setBackgroundColor(new BaseColor(174, 238, 238));
+            table.addCell(pdfPCell);
+        }
+        document.add(table);
+        document.add(new Paragraph("\n\n"));
+
+        //设置题目
+        PdfPTable questionTable = new PdfPTable(1);
+        PdfPCell questionCell;
+        questionTable.setWidthPercentage(100.0F);
+        questionTable.setHeaderRows(1);
+        for (String question:questionStringList) {
+            log.info("======================================================="+question);
+            questionCell = new PdfPCell(new Phrase(question,fontSurvey));
+            //pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            questionCell.disableBorderSide(15);
+            if(question.substring(0,1).equals("√")){
+                questionCell.setBackgroundColor(new BaseColor(174, 238, 238));
+            }
+            questionTable.addCell(questionCell);
+        }
+        document.add(questionTable);
+
+        //签名
+        Paragraph Signature = new Paragraph(new Chunk("监护人签名：", fontTitle).setLocalDestination(stringList.get(0)));
+        Paragraph Signature2 = new Paragraph(new Chunk("           年   月   日：", fontTitle).setLocalDestination(stringList.get(0)));
+        Signature.setAlignment(Element.ALIGN_LEFT);
+        Signature2.setAlignment(Element.ALIGN_LEFT);
+        document.add(Signature);
+        document.add(Signature2);
+        // 第七步，关闭document
+        document.close();
+
+        return path1;
     }
 
     public static String PDF(List<String> stringList, HttpServletResponse response, String UUID) throws Exception {
@@ -626,6 +725,7 @@ public class PaperServiceImpl implements PaperService {
         document.open();
         // 第六步,设置内容
         document.add(new Paragraph(new Chunk(stringList.get(0), font1).setLocalDestination(stringList.get(0))));
+
         for (int i = 1; i < stringList.size(); i++) {
             document.add(new Paragraph(new Chunk(stringList.get(i), fontZH).setLocalDestination(stringList.get(i))));
         }
@@ -661,23 +761,29 @@ public class PaperServiceImpl implements PaperService {
         // 第五步，打开生成的pdf文件
         document.open();
         // 第六步,设置内容
-        String title = "标题";
-        document.add(new Paragraph(new Chunk(title, fontZH).setLocalDestination(title)));
+        //String title = "标题";
+        Paragraph title = new Paragraph(new Chunk("标题", fontZH).setLocalDestination("标题"));
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
         document.add(new Paragraph("\n"));
-//         创建table,注意这里的2是两列的意思,下面通过table.addCell添加的时候必须添加整行内容的所有列
-//        PdfPTable table = new PdfPTable(2);
-//        PdfPCell pdfPCell = new PdfPCell();
-//        //pdfPCell.setBorder(0);
-//        table.setWidthPercentage(100.0F);
-//        table.setHeaderRows(1);
-//        table.getDefaultCell().setHorizontalAlignment(1);
-//        table.addCell(new Paragraph("序号", fontZH));
-//        table.addCell(new Paragraph("结果", fontZH));
-//        table.addCell(new Paragraph("1", fontZH));
-//        table.addCell(new Paragraph("出来了", fontZH));
-//
-//        document.add(table);
-//        document.add(new Paragraph("\n"));
+         //创建table,注意这里的2是两列的意思,下面通过table.addCell添加的时候必须添加整行内容的所有列
+        PdfPTable table = new PdfPTable(2);
+        PdfPCell pdfPCell = new PdfPCell(new Phrase("\n\n"));
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        pdfPCell.disableBorderSide(15);
+        //pdfPCell.setBorder(0);
+        table.setWidthPercentage(100.0F);
+        table.setHeaderRows(1);
+        table.getDefaultCell().setHorizontalAlignment(1);
+        table.addCell(new Paragraph("序号", fontZH));
+        table.addCell(new Paragraph("结果", fontZH));
+        table.addCell(pdfPCell);
+        table.addCell(pdfPCell);
+        table.addCell(new Paragraph("序号", fontZH));
+        table.addCell(new Paragraph("结果", fontZH));
+
+        document.add(table);
+        document.add(new Paragraph("\n"));
 //         第七步，关闭document
         document.close();
 

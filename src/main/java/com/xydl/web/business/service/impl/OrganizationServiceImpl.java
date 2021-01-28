@@ -108,19 +108,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             String birthDay = surveyUserList.get(i).get("surveyUserBirthdate").toString();
             String birthDay2 = birthDay.substring(0,10);
             surveyUserList2.add(surveyUserList.get(i));
-
-            //省
-            areaMap.put("code",surveyUserList.get(i).get("provinceCode"));
-            areaMap = organizationMapper.selectAreaByCode(areaMap);
-            surveyUserList2.get(i).put("provinceAddress",areaMap.get("areaName"));
-            //市
-            areaMap.put("code",surveyUserList.get(i).get("cityCode"));
-            areaMap = organizationMapper.selectAreaByCode(areaMap);
-            surveyUserList2.get(i).put("cityAddress",areaMap.get("areaName"));
-            //县
-            areaMap.put("code",surveyUserList.get(i).get("countyCode"));
-            areaMap = organizationMapper.selectAreaByCode(areaMap);
-            surveyUserList2.get(i).put("countyAddress",areaMap.get("areaName"));
             surveyUserList2.get(i).put("surveyUserBirthdate",birthDay2);
         }
 //        //老人list(年龄)

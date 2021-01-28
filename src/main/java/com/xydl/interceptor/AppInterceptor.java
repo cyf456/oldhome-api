@@ -40,10 +40,14 @@ public class AppInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        //request.getRequestURI()
-        if(request.getMethod().equals("GET")){
+        log.info("request.getRequestURI====================================="+request.getRequestURI());
+        log.info("request.getRequestURL====================================="+request.getRequestURL());
+        if(request.getRequestURI().equals("/oldhome-api/Paper/expotResultByResultId")){
             return true;
         }
+//        if(request.getMethod().equals("GET")){
+//            return true;
+//        }
 
         /*if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             //支持跨域
@@ -58,7 +62,7 @@ public class AppInterceptor implements HandlerInterceptor{
             response.setHeader("Access-Control-Allow-Methods", "*");
         }*/
 
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Origin", "*");//允许所有域名访问
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Methods", "*");
 
