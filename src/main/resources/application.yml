@@ -76,3 +76,13 @@ aes:
 application:
     filepath: D:\office2\
 
+ding:
+  key:
+    appKey: "ding7ftxbbs5ttgrlkx8"
+    appSecret: "69fFvsAtXK3zeIL_DXpKW8_r6yXrJb_CpH-Jwyo5-zeiJe-3IU6hMgIWNwmcIQcp"
+    corpId: "ding433d2bf8f616fbbabc961a6cb783455b"
+    SSOsecret:
+    dingAccessToken: "https://oapi.dingtalk.com/gettoken?appkey={appkey}&appsecret={appsecret}"
+    dingGetUserId: "https://oapi.dingtalk.com/user/getuserinfo?access_token={access_token}&code={code}"
+    dingGetUser: "https://oapi.dingtalk.com/user/get?access_token={access_token}&userid={userid}"
+

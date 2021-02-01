@@ -40,14 +40,14 @@ public class AppInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        log.info("request.getRequestURI====================================="+request.getRequestURI());
-        log.info("request.getRequestURL====================================="+request.getRequestURL());
-        if(request.getRequestURI().equals("/oldhome-api/Paper/expotResultByResultId")){
-            return true;
-        }
-//        if(request.getMethod().equals("GET")){
+//        log.info("request.getRequestURI====================================="+request.getRequestURI());
+//        log.info("request.getRequestURL====================================="+request.getRequestURL());
+//        if(request.getRequestURI().equals("/oldhome-api/Paper/expotResultByResultId")){
 //            return true;
 //        }
+        if(request.getMethod().equals("GET")){
+            return true;
+        }
 
         /*if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             //支持跨域

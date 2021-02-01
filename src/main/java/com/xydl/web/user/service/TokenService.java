@@ -8,6 +8,7 @@ import com.xydl.common.utils.uuid.IdUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @author chenchen
  */
 @Component
+@Slf4j
 public class TokenService {
     // 令牌自定义标识
     @Value("${token.header}")
@@ -133,6 +135,7 @@ public class TokenService {
         userObj.put("expireTime",userObj.getLong("loginTime") + expireTime * MILLIS_MINUTE);
         // 根据uuid将loginUser缓存
         String userKey = getTokenKey(userObj.getString("token"));
+        log.info("userObj.toString+++++++++++++++++++++++++++++++++++++++++++++++"+userObj.toString());
         redisCache.setCacheObject(userKey, userObj.toString(), expireTime, TimeUnit.MINUTES);
     }
 
@@ -146,6 +149,7 @@ public class TokenService {
         String token = Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
+        log.info("token+++++++++++++++++++++++++++++++++++++++++++++++++"+token);
         return token;
     }
 

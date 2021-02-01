@@ -5,6 +5,7 @@ import com.xydl.common.utils.CommonResult;
 import com.xydl.common.utils.uuid.IdUtils;
 import com.xydl.web.business.service.PaperService;
 import com.xydl.web.user.service.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
@@ -45,6 +46,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/Paper")
+@Slf4j
 public class PaperController {
 
     @Autowired
@@ -141,7 +143,7 @@ public class PaperController {
             //JSONObject jsonObject = JSONObject.fromObject(requestJson);
             JSONObject userObj = tokenService.getLoginUser(request);
             userObj.put("appUserId", userObj.get("userId"));
-            System.out.println("userObj===============================" + userObj.get("userId"));
+            log.info("userObj===============================" + userObj.get("userId"));
             map = paperService.selectResultByAppUserId(userObj);
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,13 +241,13 @@ public class PaperController {
     /**
      * 导出pdf
      *
-     * @param request
+     * @param
      * @return
      */
     @CheckToken
     @RequestMapping("/expotResultByResultId")
     @ResponseBody
-    public void expotResultByResultId(HttpServletRequest request, HttpServletResponse response, String paperResultId) {
+    public void expotResultByResultId(HttpServletResponse response, String paperResultId) {
         String uuId = IdUtils.fastSimpleUUID();
         //获取前端传过来的问卷调查结果
         try {
