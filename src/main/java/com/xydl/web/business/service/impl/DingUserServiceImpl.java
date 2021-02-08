@@ -2,6 +2,7 @@ package com.xydl.web.business.service.impl;
 
 import com.xydl.common.utils.constant.DingCodeEnum;
 import com.xydl.common.utils.constant.DingProperties;
+import com.xydl.web.business.dao.DingUserMapper;
 import com.xydl.web.business.entity.DingUserDTO;
 import com.xydl.web.business.entity.DingUserIdDTO;
 import com.xydl.web.business.service.DingUserService;
@@ -24,6 +25,9 @@ public class DingUserServiceImpl implements DingUserService {
 
     @Autowired
     private DingProperties dingProperties;
+
+    @Autowired
+    private DingUserMapper dingUserMapper;
 
     public DingUserIdDTO getUserId(String access_token, String code){
         long starTime = System.nanoTime();
@@ -84,7 +88,30 @@ public class DingUserServiceImpl implements DingUserService {
         }
 
         log.info("[2.2.2]获取钉钉user结束,耗时:{}ms",(System.nanoTime()-starTime)/1000);
-        return res;
 
+        //查询该用户是否存在
+        //log.info("userid===================================="+res.getUserid());
+//        DingUserRunnable dingUserRunnable = new DingUserRunnable();
+//        dingUserRunnable.setDingUserDTO(res);
+//        Thread dingUser = new Thread(dingUserRunnable,"添加钉钉用户信息");
+//        dingUser.start();
+        int a = dingUserMapper.selectDingUserByUserId(res.getUserid());
+        if(a == 0){
+            //添加钉钉用户信息
+            int b = dingUserMapper.insertDingUser(res);
+        }
+
+        return res;
+    }
+
+    @Override
+    public int addDingDingUser(DingUserDTO dingUserDTO) {
+        log.info("userid========================================="+dingUserDTO.toString());
+        int a = dingUserMapper.selectDingUserByUserId(dingUserDTO.getUserid());
+        if(a == 0){
+            //添加钉钉用户信息
+            int b = dingUserMapper.insertDingUser(dingUserDTO);
+        }
+        return 0;
     }
 }

@@ -63,6 +63,8 @@ public class TokenService {
             String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
             String userKey = getTokenKey(uuid);
             userObj = JSONObject.fromObject(redisCache.getCacheObject(userKey));
+            log.info("key++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"+userKey);
+            log.info("userObj------------------------------------------------------------"+userObj.toString());
             return userObj;
         }
         return null;
@@ -136,6 +138,7 @@ public class TokenService {
         // 根据uuid将loginUser缓存
         String userKey = getTokenKey(userObj.getString("token"));
         log.info("userObj.toString+++++++++++++++++++++++++++++++++++++++++++++++"+userObj.toString());
+        log.info("userObj.toString+++++++++++++++++++++++++++++++++++++++++++++++"+userObj.getString("token"));
         redisCache.setCacheObject(userKey, userObj.toString(), expireTime, TimeUnit.MINUTES);
     }
 

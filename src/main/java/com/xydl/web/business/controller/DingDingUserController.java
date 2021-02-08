@@ -5,6 +5,7 @@ import com.xydl.web.business.entity.DingUserDTO;
 import com.xydl.web.business.entity.DingUserIdDTO;
 import com.xydl.web.business.service.DingAuthService;
 import com.xydl.web.business.service.DingUserService;
+import com.xydl.web.business.service.impl.DingAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +35,7 @@ public class DingDingUserController {
      */
     @GetMapping("/login")
     public Map<String, Object> authCodeLogin(@RequestParam("code") String code) {
-
-        DingAccessTokenDTO accessTokenDTO = dingAuthService.accessToken();
+        DingAccessTokenDTO accessTokenDTO = dingAuthService.getDingLoginUser();
         DingUserIdDTO userIdDTO = dingUserService.getUserId(accessTokenDTO.getAccess_token(), code);
         DingUserDTO userInfo = dingUserService.getUserInfo(accessTokenDTO.getAccess_token(), userIdDTO.getUserid());
         Map<String, Object> result = new LinkedHashMap<>();
@@ -47,6 +47,10 @@ public class DingDingUserController {
         log.debug("[钉钉] 用户免登, 根据免登授权码code, corpId获取用户信息, code: {}, result:{}", code, result);
 
         return result;
+    }
+
+    public void accessToken(){
+
     }
 }
 

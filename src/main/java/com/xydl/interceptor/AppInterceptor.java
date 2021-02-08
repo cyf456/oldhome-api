@@ -42,12 +42,16 @@ public class AppInterceptor implements HandlerInterceptor{
 
 //        log.info("request.getRequestURI====================================="+request.getRequestURI());
 //        log.info("request.getRequestURL====================================="+request.getRequestURL());
-//        if(request.getRequestURI().equals("/oldhome-api/Paper/expotResultByResultId")){
-//            return true;
-//        }
-        if(request.getMethod().equals("GET")){
+        if(request.getRequestURI().equals("/oldhome-api/ding/login")){
             return true;
         }
+//        if(request.getRequestURI().equals("/oldhome-api/index.html")){
+//            return true;
+//        }
+        //request.getRequestDispatcher("/*.html")
+//        if(request.getMethod().equals("GET")){
+//            return true;
+//        }
 
         /*if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             //支持跨域
@@ -69,7 +73,8 @@ public class AppInterceptor implements HandlerInterceptor{
         //输入参数
         String requestBody = HttpHelper.getBodyString(request);
         log.info("输入参数：" + requestBody);
-        System.out.println("======================================"+requestBody);
+        log.info("======================================"+requestBody);
+        log.info("======================================"+handler);
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
 

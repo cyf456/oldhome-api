@@ -7,10 +7,10 @@ import lombok.ToString;
 @ToString
 public class DingUserDTO {
 
+    private String userid;
     private Integer errcode;
     private String unionid;
     private String remark;
-    private String userid;
     private String isLeaderInDepts;
     private Boolean isBoss;
     private Long hiredDate;

@@ -12,7 +12,6 @@ server:
     max-threads: 800
     # Tomcat启动初始化的线程数，默认值25
     min-spare-threads: 30
-
 # 日志配置
 logging:
   level:
@@ -85,4 +84,4 @@ ding:
     dingAccessToken: "https://oapi.dingtalk.com/gettoken?appkey={appkey}&appsecret={appsecret}"
     dingGetUserId: "https://oapi.dingtalk.com/user/getuserinfo?access_token={access_token}&code={code}"
     dingGetUser: "https://oapi.dingtalk.com/user/get?access_token={access_token}&userid={userid}"
-
+    expireTime: 120     #accessToken有效期(分钟)

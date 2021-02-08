@@ -71,4 +71,9 @@ public class Constants
      * 令牌前缀
      */
     public static final String LOGIN_USER_KEY = "app_login_user_key";
+
+    /**
+     * 钉钉token redis key
+     */
+    public static final String DINGDING_ACCESS_TOKEN = "dingding_access_token:";
 }

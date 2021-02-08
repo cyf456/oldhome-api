@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xydl.web.business.dao.DingUserMapper">
+
+    <insert id="insertDingUser" parameterType="com.xydl.web.business.entity.DingUserDTO">
+        INSERT INTO t_dingding_user(
+        userid,
+        errcode,
+        unionid,
+        remark,
+        isLeaderInDepts,
+        isBoss,
+        hiredDate,
+        isSenior,
+        tel,
+        workPlace,
+        email,
+        mobile,
+        errmsg,
+        active,
+        avatar,
+        isAdmin,
+        isHide,
+        jobnumber,
+        name,
+        stateCode,
+        position
+        )
+        VALUES
+        (
+        #{userid},
+        #{errcode},
+        #{unionid},
+        #{remark},
+        #{isLeaderInDepts},
+        #{isBoss},
+        #{hiredDate},
+        #{isSenior},
+        #{tel},
+        #{workPlace},
+        #{email},
+        #{mobile},
+        #{errmsg},
+        #{active},
+        #{avatar},
+        #{isAdmin},
+        #{isHide},
+        #{jobnumber},
+        #{name},
+        #{stateCode},
+        #{position}
+    )
+    </insert>
+    <select id="selectDingUserByUserId" parameterType="java.lang.String" resultType="int">
+        select COUNT(userid) from t_dingding_user WHERE userid = #{userid}
+    </select>
+</mapper>

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -29,6 +30,10 @@ public class InterceptorConfig extends WebMvcConfigurerAdapter {
         InterceptorRegistration ir = registry.addInterceptor(appInterceptor()).addPathPatterns("/**");
 
         //不拦截请求
-        //ir.excludePathPatterns("/test/test");
+        ir.excludePathPatterns("/test/test");
+        ir.excludePathPatterns("/*.html");
+        ir.excludePathPatterns("/*.js");
+        ir.excludePathPatterns("/js/*.js");
+        //ir.excludePathPatterns("/error");
     }
 }

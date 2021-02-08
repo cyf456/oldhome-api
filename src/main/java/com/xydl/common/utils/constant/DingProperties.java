@@ -16,4 +16,5 @@ public class DingProperties {
     public String dingAccessToken;
     public String dingGetUserId;
     public String dingGetUser;
+    public int expireTime;
 }

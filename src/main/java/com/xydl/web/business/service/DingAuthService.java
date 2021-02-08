@@ -5,7 +5,6 @@ import com.xydl.web.business.entity.DingAccessTokenDTO;
 
 public interface DingAuthService {
 
-    DingAccessTokenDTO accessToken();
-
+    public DingAccessTokenDTO getDingLoginUser();
 }
 
